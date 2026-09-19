@@ -9,48 +9,75 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as EditorRouteImport } from './routes/editor'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EditorRouteImport } from './routes/editor'
+import { Route as PrototypesIndexRouteImport } from './routes/prototypes/index'
+import { Route as PrototypesStepRouteImport } from './routes/prototypes/$step'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EditorRoute = EditorRouteImport.update({
   id: '/editor',
   path: '/editor',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const PrototypesIndexRoute = PrototypesIndexRouteImport.update({
+  id: '/prototypes/',
+  path: '/prototypes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrototypesStepRoute = PrototypesStepRouteImport.update({
+  id: '/prototypes/$step',
+  path: '/prototypes/$step',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
+  '/prototypes/$step': typeof PrototypesStepRoute
+  '/prototypes/': typeof PrototypesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
+  '/prototypes/$step': typeof PrototypesStepRoute
+  '/prototypes': typeof PrototypesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
+  '/prototypes/$step': typeof PrototypesStepRoute
+  '/prototypes/': typeof PrototypesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/editor'
+  fullPaths: '/' | '/editor' | '/prototypes/$step' | '/prototypes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/editor'
-  id: '__root__' | '/' | '/editor'
+  to: '/' | '/editor' | '/prototypes/$step' | '/prototypes'
+  id: '__root__' | '/' | '/editor' | '/prototypes/$step' | '/prototypes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EditorRoute: typeof EditorRoute
+  PrototypesStepRoute: typeof PrototypesStepRoute
+  PrototypesIndexRoute: typeof PrototypesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/editor': {
       id: '/editor'
       path: '/editor'
@@ -58,11 +85,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/prototypes/': {
+      id: '/prototypes/'
+      path: '/prototypes'
+      fullPath: '/prototypes/'
+      preLoaderRoute: typeof PrototypesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prototypes/$step': {
+      id: '/prototypes/$step'
+      path: '/prototypes/$step'
+      fullPath: '/prototypes/$step'
+      preLoaderRoute: typeof PrototypesStepRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -71,6 +105,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EditorRoute: EditorRoute,
+  PrototypesStepRoute: PrototypesStepRoute,
+  PrototypesIndexRoute: PrototypesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
