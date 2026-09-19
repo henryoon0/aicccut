@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "#/lib/utils.ts"
-import { Button } from "#/components/ui/button.tsx"
+import { buttonVariants } from "#/components/ui/button.tsx"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft01Icon, ArrowRight01Icon, MoreHorizontalCircle01Icon } from "@hugeicons/core-free-icons"
 
@@ -36,8 +36,8 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 
 type PaginationLinkProps = {
   isActive?: boolean
-} & Pick<React.ComponentProps<typeof Button>, "size"> &
-  React.ComponentProps<"a">
+  size?: "icon" | "default" | "compact" | "icon-compact"
+} & React.ComponentProps<"a">
 
 function PaginationLink({
   className,
@@ -46,19 +46,15 @@ function PaginationLink({
   ...props
 }: PaginationLinkProps) {
   return (
-    <Button
-      variant={isActive ? "outline" : "ghost"}
-      size={size}
-      className={cn(className)}
-      nativeButton={false}
-      render={
-        <a
-          aria-current={isActive ? "page" : undefined}
-          data-slot="pagination-link"
-          data-active={isActive}
-          {...props}
-        />
-      }
+    <a
+      aria-current={isActive ? "page" : undefined}
+      data-slot="pagination-link"
+      data-active={isActive}
+      className={cn(
+        buttonVariants({ variant: isActive ? "secondary" : "ghost", size }),
+        className
+      )}
+      {...props}
     />
   )
 }
@@ -67,12 +63,12 @@ function PaginationPrevious({
   className,
   text = "Previous",
   ...props
-}: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
+}: Omit<React.ComponentProps<typeof PaginationLink>, "size"> & { text?: string }) {
   return (
     <PaginationLink
       aria-label="Go to previous page"
-      size="default"
       className={cn("pl-2!", className)}
+      size="default"
       {...props}
     >
       <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} data-icon="inline-start" />
@@ -85,12 +81,12 @@ function PaginationNext({
   className,
   text = "Next",
   ...props
-}: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
+}: Omit<React.ComponentProps<typeof PaginationLink>, "size"> & { text?: string }) {
   return (
     <PaginationLink
       aria-label="Go to next page"
-      size="default"
       className={cn("pr-2!", className)}
+      size="default"
       {...props}
     >
       <span className="hidden sm:block">{text}</span>
