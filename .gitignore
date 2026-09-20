@@ -4,7 +4,7 @@ target/
 .env
 .env.*
 !.env.example
-docs/
+# docs/ holds the tutorial and README screenshots; keep them in the repo.
 
 # moon runtime cache
 .moon/cache/
