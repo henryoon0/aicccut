@@ -141,14 +141,17 @@ export function removeAsset(doc: Document, assetId: string): Document {
 // ── Clips: insert / move ───────────────────────────────────
 
 function firstFreeTrack(doc: Document, kind: TrackKind, start: number, duration: number): Track | undefined {
-  const candidates = doc.tracks.filter((t) => t.kind === kind && !t.locked);
+  // Tracks are listed top-to-bottom, so walk them bottom-up: the base layer
+  // (비디오 1, at the bottom) fills first, and a clip only climbs to an upper
+  // track when the lower ones are busy at that time.
+  const candidates = doc.tracks.filter((t) => t.kind === kind && !t.locked).reverse();
   const free = candidates.find((t) => !trackClips(doc, t.id).some((c) => c.start < start + duration - EPS && endOf(c) > start + EPS));
-  return free ?? candidates[0] ?? doc.tracks.find((t) => t.kind === kind);
+  return free ?? candidates[0] ?? [...doc.tracks].reverse().find((t) => t.kind === kind);
 }
 
 /**
- * Add a clip for an asset at `start`. `trackId: "auto"` picks the first
- * kind-compatible track with room (else the first compatible track);
+ * Add a clip for an asset at `start`. `trackId: "auto"` picks the lowest
+ * kind-compatible track with room (else the lowest compatible track);
  * overlapping clips are pushed right.
  */
 export function addClipFromAsset(doc: Document, assetId: string, trackId: string | "auto", start: number): { doc: Document; clip?: Clip } {
