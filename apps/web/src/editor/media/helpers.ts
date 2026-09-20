@@ -8,7 +8,7 @@ import type { IconComponent } from "#/lib/icon-context.tsx";
 import { TINTS, type Asset, type AssetKind } from "#/editor/core";
 
 export const KIND_ICON: Record<AssetKind, IconComponent> = { video: Film, audio: AudioLines, image: ImageIcon };
-export const KIND_LABEL: Record<AssetKind, string> = { video: "Video", audio: "Audio", image: "Image" };
+export const KIND_LABEL: Record<AssetKind, string> = { video: "영상", audio: "오디오", image: "이미지" };
 export const KIND_ORDER: AssetKind[] = ["video", "audio", "image"];
 
 export const ACCEPT = "video/*,audio/*,image/*";
@@ -47,9 +47,9 @@ export function shortRes(a: Pick<Asset, "width" | "height">): string | null {
 export type SortKey = "added" | "name" | "kind" | "duration" | "size";
 export type SortDir = "asc" | "desc";
 export const SORT_KEYS: SortKey[] = ["added", "name", "kind", "duration", "size"];
-export const SORT_LABEL: Record<SortKey, string> = { added: "Date added", name: "Name", kind: "Kind", duration: "Duration", size: "Size" };
-/** Trigger labels: the flyout is 280px, so the button cannot carry "Date added". */
-export const SORT_SHORT: Record<SortKey, string> = { added: "Added", name: "Name", kind: "Kind", duration: "Length", size: "Size" };
+export const SORT_LABEL: Record<SortKey, string> = { added: "추가한 순", name: "이름 순", kind: "종류 순", duration: "길이 순", size: "용량 순" };
+/** Trigger labels: the flyout is 280px, so the button carries the shortest form. */
+export const SORT_SHORT: Record<SortKey, string> = { added: "추가순", name: "이름순", kind: "종류순", duration: "길이순", size: "용량순" };
 
 export function sortAssets(list: Asset[], key: SortKey, dir: SortDir): Asset[] {
   const sign = dir === "asc" ? 1 : -1;
@@ -69,7 +69,7 @@ export function sortAssets(list: Asset[], key: SortKey, dir: SortDir): Asset[] {
 export function matchesQuery(a: Asset, q: string): boolean {
   const s = q.trim().toLowerCase();
   if (!s) return true;
-  const hay = [a.name, a.kind, resolution(a), shortRes(a) ?? "", a.fps ? `${a.fps}fps` : ""].join(" ").toLowerCase();
+  const hay = [a.name, a.kind, KIND_LABEL[a.kind], resolution(a), shortRes(a) ?? "", a.fps ? `${a.fps}fps` : ""].join(" ").toLowerCase();
   return s.split(/\s+/).every((w) => hay.includes(w));
 }
 

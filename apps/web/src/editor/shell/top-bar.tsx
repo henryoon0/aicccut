@@ -49,11 +49,11 @@ function ProjectName() {
           onChange={(e) => setDraft(e.target.value)}
           onBlur={commit}
           onKeyDown={onKey}
-          aria-label="Project name"
+          aria-label="프로젝트 이름"
           className="h-6 w-48 min-w-0 rounded-md bg-surface-3 px-1.5 text-[13px] font-medium text-foreground shadow-surface-1 outline-none focus-visible:ring-1 focus-visible:ring-ring"
         />
       ) : (
-        <Tooltip content="Rename" side="bottom">
+        <Tooltip content="이름 바꾸기" side="bottom">
           <button
             type="button"
             onClick={start}
@@ -76,13 +76,13 @@ function History() {
   useEditor((s) => s.history.past.length + s.history.future.length * 1000);
   return (
     <div className="ml-1 flex items-center">
-      <Tooltip content="Undo (⌘Z)" side="bottom">
-        <Button variant="ghost" size="icon-compact" aria-label="Undo" disabled={!store.canUndo()} onClick={() => store.undo()}>
+      <Tooltip content="실행 취소 (⌘Z)" side="bottom">
+        <Button variant="ghost" size="icon-compact" aria-label="실행 취소" disabled={!store.canUndo()} onClick={() => store.undo()}>
           <Undo2 />
         </Button>
       </Tooltip>
-      <Tooltip content="Redo (⇧⌘Z)" side="bottom">
-        <Button variant="ghost" size="icon-compact" aria-label="Redo" disabled={!store.canRedo()} onClick={() => store.redo()}>
+      <Tooltip content="다시 실행 (⇧⌘Z)" side="bottom">
+        <Button variant="ghost" size="icon-compact" aria-label="다시 실행" disabled={!store.canRedo()} onClick={() => store.redo()}>
           <Redo2 />
         </Button>
       </Tooltip>
@@ -96,8 +96,8 @@ export function TopBar({ saveStatus, theme, onToggleTheme }: { saveStatus: SaveS
   return (
     <header className="flex h-11 shrink-0 items-center gap-2 border-b border-border bg-surface-1 px-2">
       <div className="flex min-w-0 items-center gap-1">
-        <Tooltip content="All projects" side="bottom">
-          <Link to="/" aria-label="Back to projects" className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors duration-80 hover:bg-hover hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden">
+        <Tooltip content="모든 프로젝트" side="bottom">
+          <Link to="/" aria-label="프로젝트 목록으로" className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors duration-80 hover:bg-hover hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden">
             <ArrowLeft size={14} />
           </Link>
         </Tooltip>
@@ -109,28 +109,28 @@ export function TopBar({ saveStatus, theme, onToggleTheme }: { saveStatus: SaveS
           aria-live="polite"
           className={cn("text-[11px] tabular-nums transition-colors duration-80", saveStatus === "saving" ? "text-foreground" : "text-muted-foreground")}
         >
-          {saveStatus === "saving" ? "Saving…" : "Saved"}
+          {saveStatus === "saving" ? "저장 중…" : "저장됨"}
         </span>
       </div>
       <div className="flex shrink-0 items-center gap-1">
-        <Tooltip content="Command palette" side="bottom">
-          <Button variant="ghost" size="compact" aria-label="Open command palette" onClick={() => actions.setUi({ palette: true })}>
+        <Tooltip content="명령 팔레트" side="bottom">
+          <Button variant="ghost" size="compact" aria-label="명령 팔레트 열기" onClick={() => actions.setUi({ palette: true })}>
             <Command size={13} />
             <Kbd>⌘K</Kbd>
           </Button>
         </Tooltip>
-        <Tooltip content={theme === "dark" ? "Light theme" : "Dark theme"} side="bottom">
-          <Button variant="ghost" size="icon-compact" aria-label="Toggle theme" onClick={onToggleTheme}>
+        <Tooltip content={theme === "dark" ? "밝은 테마" : "어두운 테마"} side="bottom">
+          <Button variant="ghost" size="icon-compact" aria-label="테마 전환" onClick={onToggleTheme}>
             {theme === "dark" ? <Sun /> : <Moon />}
           </Button>
         </Tooltip>
-        <Tooltip content={inspectorOpen ? "Hide inspector (I)" : "Show inspector (I)"} side="bottom">
-          <Button variant="ghost" size="icon-compact" aria-label="Toggle inspector" onClick={() => actions.toggleUi("inspector")}>
+        <Tooltip content={inspectorOpen ? "속성 패널 숨기기 (I)" : "속성 패널 보기 (I)"} side="bottom">
+          <Button variant="ghost" size="icon-compact" aria-label="속성 패널 전환" onClick={() => actions.toggleUi("inspector")}>
             {inspectorOpen ? <PanelRightClose /> : <PanelRightOpen />}
           </Button>
         </Tooltip>
         <Button variant="primary" size="compact" leadingIcon={Share2} onClick={() => actions.openDialog("export")}>
-          Export
+          내보내기
         </Button>
       </div>
     </header>

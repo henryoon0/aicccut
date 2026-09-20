@@ -75,7 +75,7 @@ export function Preview() {
             {active.length === 0 && (
               <div data-stage-bg className="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <span className="text-muted-foreground" style={{ fontSize: Math.round(project.width * 0.016) }}>
-                  No clip at the playhead
+                  재생 헤드 위치에 클립이 없습니다
                 </span>
               </div>
             )}

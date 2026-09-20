@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 export type Theme = "dark" | "light";
-export const THEME_KEY = "opencut.theme";
+export const THEME_KEY = "aicccut.theme";
 
 /** Theme is dark by default; the choice lives in localStorage and the `dark` class on <html>. */
 export function useTheme() {

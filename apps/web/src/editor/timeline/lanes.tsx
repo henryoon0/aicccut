@@ -85,7 +85,7 @@ function Lane({
             <button
               key={k.id}
               type="button"
-              aria-label={`${meta.label} keyframe at ${k.time.toFixed(2)} s`}
+              aria-label={`${meta.label} 키프레임 ${k.time.toFixed(2)}초`}
               className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 p-1 outline-none"
               style={{ left: k.time * pps }}
               onPointerDown={(e) => {

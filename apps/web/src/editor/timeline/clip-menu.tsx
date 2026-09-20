@@ -30,38 +30,38 @@ export function ClipMenuItems({ clip }: { clip: Clip }) {
     <>
       <ContextMenuGroup>
         <ContextMenuLabel className="truncate">
-          {clip.label} · {clip.duration.toFixed(2)} s
+          {clip.label} · {clip.duration.toFixed(2)}초
         </ContextMenuLabel>
       </ContextMenuGroup>
       <ContextMenuItem disabled={!inside} onClick={() => actions.splitClips(targets, time.get())}>
-        <HugeiconsIcon icon={Scissor01Icon} size={14} strokeWidth={1.5} /> Split at playhead
+        <HugeiconsIcon icon={Scissor01Icon} size={14} strokeWidth={1.5} /> 분할
         <ContextMenuShortcut>{key("S")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuItem disabled={!inside} onClick={() => actions.trimToTime(clip.id, "start", time.get())}>
-        Trim start to playhead
+        시작점을 재생 헤드로
         <ContextMenuShortcut>{key("[")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuItem disabled={!inside} onClick={() => actions.trimToTime(clip.id, "end", time.get())}>
-        Trim end to playhead
+        끝점을 재생 헤드로
         <ContextMenuShortcut>{key("]")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuSeparator />
       <ContextMenuItem onClick={() => actions.duplicateClip(clip.id)}>
-        <HugeiconsIcon icon={Copy01Icon} size={14} strokeWidth={1.5} /> Duplicate
+        <HugeiconsIcon icon={Copy01Icon} size={14} strokeWidth={1.5} /> 복제
         <ContextMenuShortcut>{key("Mod+D")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuItem onClick={() => actions.toggleClipsMuted(targets)}>
         <HugeiconsIcon icon={clip.muted ? VolumeHighIcon : VolumeOffIcon} size={14} strokeWidth={1.5} />
-        {clip.muted ? "Unmute" : "Mute"}
+        {clip.muted ? "음소거 해제" : "음소거"}
         <ContextMenuShortcut>{key("Shift+M")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuSeparator />
       <ContextMenuItem variant="destructive" onClick={() => actions.deleteClips(targets, false)}>
-        <HugeiconsIcon icon={Delete02Icon} size={14} strokeWidth={1.5} /> Delete
+        <HugeiconsIcon icon={Delete02Icon} size={14} strokeWidth={1.5} /> 삭제
         <ContextMenuShortcut>{key("Backspace")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuItem variant="destructive" onClick={() => actions.deleteClips(targets, true)}>
-        <HugeiconsIcon icon={Delete02Icon} size={14} strokeWidth={1.5} /> Ripple delete
+        <HugeiconsIcon icon={Delete02Icon} size={14} strokeWidth={1.5} /> 리플 삭제
         <ContextMenuShortcut>{key("Shift+Backspace")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuSeparator />
@@ -71,7 +71,7 @@ export function ClipMenuItems({ clip }: { clip: Clip }) {
           actions.setUi({ inspector: true });
         }}
       >
-        <HugeiconsIcon icon={InformationCircleIcon} size={14} strokeWidth={1.5} /> Properties…
+        <HugeiconsIcon icon={InformationCircleIcon} size={14} strokeWidth={1.5} /> 속성…
         <ContextMenuShortcut>{key("I")}</ContextMenuShortcut>
       </ContextMenuItem>
     </>

@@ -13,6 +13,9 @@ import type { Asset, AssetKind, Bookmark, Clip, Document, Edge, Track, TrackFlag
 import { defaultClipProps, DEFAULT_TEXT_STYLE, TINTS } from "./seed";
 import { newId } from "./ids";
 
+/** Korean display names used when a track is created without a name. */
+const TRACK_KIND_LABEL: Record<TrackKind, string> = { video: "비디오", audio: "오디오", text: "텍스트", effect: "효과" };
+
 export * from "./clip-props";
 
 const EPS = 1e-6;
@@ -152,11 +155,11 @@ export function addClipFromAsset(doc: Document, assetId: string, trackId: string
 }
 
 /** Add a text clip on the first unlocked text track (created when missing). */
-export function addTextClip(doc: Document, start: number, content = "New text", duration = DEFAULT_STILL_DURATION): { doc: Document; clip?: Clip } {
+export function addTextClip(doc: Document, start: number, content = "새 텍스트", duration = DEFAULT_STILL_DURATION): { doc: Document; clip?: Clip } {
   let d = doc;
   let track = d.tracks.find((t) => t.kind === "text" && !t.locked);
   if (!track) {
-    const r = addTrack(d, "text", "Text");
+    const r = addTrack(d, "text", "텍스트");
     d = r.doc;
     track = r.track;
   }
@@ -315,7 +318,7 @@ export function toggleTrack(doc: Document, id: string, flag: TrackFlag): Documen
 /** Insert a track; `index` defaults to just above the first track of the same kind (or the end). */
 export function addTrack(doc: Document, kind: TrackKind, name?: string, index?: number): { doc: Document; track: Track } {
   const count = doc.tracks.filter((t) => t.kind === kind).length;
-  const label = name ?? `${kind[0].toUpperCase()}${kind.slice(1)} ${count + 1}`;
+  const label = name ?? `${TRACK_KIND_LABEL[kind]} ${count + 1}`;
   const track: Track = { id: newId("t"), name: label, kind, muted: false, locked: false, hidden: false };
   const firstOfKind = doc.tracks.findIndex((t) => t.kind === kind);
   const at = index ?? (firstOfKind === -1 ? doc.tracks.length : firstOfKind);

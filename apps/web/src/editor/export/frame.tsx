@@ -96,7 +96,7 @@ export function FramePreview({ frame, canvas, fps, showTimecode = true, done, cl
 
       {frame.layers > 0 && (
         <span className="absolute left-2 top-2 rounded bg-black/50 px-1.5 py-0.5 text-[11px] tabular-nums text-white/80">
-          {frame.layers} {frame.layers === 1 ? "layer" : "layers"}
+          레이어 {frame.layers}개
         </span>
       )}
 

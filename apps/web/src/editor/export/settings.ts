@@ -5,7 +5,7 @@
  *
  * This build has no video encoder. `downloadProjectFile` is what the
  * Download destination really produces: the document plus the chosen
- * settings, written out as `<name>.opencut.json`.
+ * settings, written out as `<name>.aicccut.json`.
  */
 import { documentDuration, type Document } from "#/editor/core";
 
@@ -26,15 +26,15 @@ export interface FormatDef {
 }
 
 export const FORMATS: readonly FormatDef[] = [
-  { id: "h264", label: "MP4 · H.264", ext: "mp4", hint: "Plays everywhere", codec: 1 },
-  { id: "h265", label: "MP4 · H.265", ext: "mp4", hint: "Smaller, needs newer devices", codec: 0.6 },
-  { id: "webm", label: "WebM · VP9", ext: "webm", hint: "Web embeds, transparency", codec: 0.7 },
-  { id: "gif", label: "GIF", ext: "gif", hint: "Silent loop, max 15 fps", codec: 1 },
-  { id: "mp3", label: "MP3 · Audio only", ext: "mp3", hint: "Voice track and music", codec: 1, audioOnly: true },
+  { id: "h264", label: "MP4 · H.264", ext: "mp4", hint: "어디서나 재생됩니다", codec: 1 },
+  { id: "h265", label: "MP4 · H.265", ext: "mp4", hint: "용량은 작지만 최신 기기가 필요합니다", codec: 0.6 },
+  { id: "webm", label: "WebM · VP9", ext: "webm", hint: "웹 삽입용, 투명 배경을 지원합니다", codec: 0.7 },
+  { id: "gif", label: "GIF", ext: "gif", hint: "소리 없이 반복 재생됩니다, 최대 15fps", codec: 1 },
+  { id: "mp3", label: "MP3 · 오디오만", ext: "mp3", hint: "음성과 음악 트랙만 내보냅니다", codec: 1, audioOnly: true },
 ];
 
 export const RESOLUTIONS: readonly { id: Resolution; label: string }[] = [
-  { id: "source", label: "Source" },
+  { id: "source", label: "원본" },
   { id: "4k", label: "4K" },
   { id: "1080p", label: "1080p" },
   { id: "720p", label: "720p" },
@@ -43,7 +43,7 @@ export const RESOLUTIONS: readonly { id: Resolution; label: string }[] = [
 export const FPS_CHOICES: readonly FpsChoice[] = ["source", "24", "30", "60"];
 
 /** The extension every export in this build actually lands on. */
-export const PROJECT_FILE_EXT = "opencut.json";
+export const PROJECT_FILE_EXT = "aicccut.json";
 
 export interface ExportSettings {
   format: Format;
@@ -99,9 +99,9 @@ export function formatDef(id: Format): FormatDef {
 }
 
 export function qualityLabel(q: number): string {
-  if (q < 40) return "Low";
-  if (q < 75) return "Medium";
-  return "High";
+  if (q < 40) return "낮음";
+  if (q < 75) return "중간";
+  return "높음";
 }
 
 /** Output pixel size: "source" keeps the canvas, the presets pin the short side. */
@@ -148,11 +148,12 @@ export function estimateBytes(s: ExportSettings, ctx: ExportContext): number {
   return ((mbps * def.codec * 1_000_000) / 8) * seconds;
 }
 
+/** One-line spec, e.g. "1920×1080 · 30fps · MP4 · H.264" (audio: "224kbps · MP3 · 오디오만"). */
 export function specLine(s: ExportSettings, ctx: ExportContext): string {
   const def = formatDef(s.format);
-  if (def.audioOnly) return `${Math.round(96 + (s.quality / 100) * 224)} kbps · ${def.label}`;
+  if (def.audioOnly) return `${Math.round(96 + (s.quality / 100) * 224)}kbps · ${def.label}`;
   const { width, height } = dimensions(s, ctx);
-  return `${width}×${height} · ${fpsValue(s, ctx)} fps · ${def.label}`;
+  return `${width}×${height} · ${fpsValue(s, ctx)}fps · ${def.label}`;
 }
 
 /** Lowercased, dash-joined name that is safe as a file name (Korean survives). */
@@ -166,7 +167,7 @@ export function slugify(name: string): string {
 }
 
 export interface ProjectFile {
-  kind: "opencut.project";
+  kind: "aicccut.project";
   version: 1;
   exportedAt: string;
   /** What the wizard was set to, kept so a future encoder can replay it. */
@@ -190,7 +191,7 @@ export function buildProjectFile(doc: Document, s: ExportSettings, ctx: ExportCo
   const def = formatDef(s.format);
   const { width, height } = dimensions(s, ctx);
   return {
-    kind: "opencut.project",
+    kind: "aicccut.project",
     version: 1,
     exportedAt: new Date().toISOString(),
     export: {
@@ -210,9 +211,9 @@ export function buildProjectFile(doc: Document, s: ExportSettings, ctx: ExportCo
   };
 }
 
-/** Full name of the file this build writes, e.g. `my-project.opencut.json`. */
+/** Full name of the file this build writes, e.g. `my-project.aicccut.json`. */
 export function projectFileName(base: string): string {
-  const clean = base.trim().replace(/\.(opencut\.)?json$/i, "");
+  const clean = base.trim().replace(/\.(aicccut\.)?json$/i, "");
   return `${clean || "untitled"}.${PROJECT_FILE_EXT}`;
 }
 

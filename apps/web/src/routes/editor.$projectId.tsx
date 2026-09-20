@@ -44,7 +44,7 @@ function EditorSession({ store }: { store: EditorStore }) {
   useAutosave(store);
   useGlobalShortcuts(ctx, { onMessage: commandToast });
   useEffect(() => {
-    document.title = `${name} · OpenCut`;
+    document.title = `${name} · AiccCut`;
   }, [name]);
   return <EditorShell />;
 }
@@ -78,17 +78,17 @@ function EditorRoute() {
   if (boot.status === "loading") {
     return (
       <Centered>
-        <p className="text-[13px] text-muted-foreground">Opening…</p>
+        <p className="text-[13px] text-muted-foreground">여는 중…</p>
       </Centered>
     );
   }
   if (!session) {
     return (
       <Centered>
-        <p className="text-[15px] font-medium">Project not found</p>
-        <p className="text-[13px] text-muted-foreground">It may have been deleted from this browser.</p>
+        <p className="text-[15px] font-medium">프로젝트를 찾을 수 없습니다</p>
+        <p className="text-[13px] text-muted-foreground">이 브라우저에서 삭제되었을 수 있습니다.</p>
         <Link to="/" className="text-[13px] text-foreground underline underline-offset-4 hover:no-underline">
-          Back to projects
+          프로젝트 목록으로
         </Link>
       </Centered>
     );

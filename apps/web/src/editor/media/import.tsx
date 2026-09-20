@@ -118,7 +118,7 @@ function hasFiles(e: { dataTransfer: DataTransfer | null }): boolean {
  * single drop or paste from importing the same files twice: the first
  * listener to see it claims it, the rest skip.
  */
-const CLAIMED = Symbol.for("opencut.media.window-import");
+const CLAIMED = Symbol.for("aicccut.media.window-import");
 
 function claim(e: Event): boolean {
   const ev = e as Event & { [CLAIMED]?: boolean };
@@ -242,7 +242,7 @@ export function useFilePicker(onFiles: (files: File[]) => void) {
       type="file"
       multiple
       accept={ACCEPT}
-      aria-label="Import media files"
+      aria-label="미디어 파일 가져오기"
       className="sr-only"
       tabIndex={-1}
       onChange={(e) => {

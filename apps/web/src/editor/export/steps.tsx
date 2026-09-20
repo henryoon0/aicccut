@@ -46,7 +46,7 @@ export function WhatStep({ settings: s, ctx, onPatch, onNext }: WhatStepProps) {
   return (
     <>
       <div className="grid flex-1 grid-cols-2 gap-5 overflow-y-auto p-6">
-        <Field label="Format">
+        <Field label="형식">
           <RadioGroup value={s.format} onValueChange={(v) => onPatch({ format: v as Format })} size="compact">
             {FORMATS.map((f, i) => (
               <RadioItem key={f.id} index={i} value={f.id} label={f.label} />
@@ -56,7 +56,7 @@ export function WhatStep({ settings: s, ctx, onPatch, onNext }: WhatStepProps) {
         </Field>
 
         <div className="grid content-start gap-4">
-          <Field label="Resolution">
+          <Field label="해상도">
             <Tabs
               value={s.resolution}
               onValueChange={(v) => onPatch({ resolution: v as Resolution })}
@@ -71,7 +71,7 @@ export function WhatStep({ settings: s, ctx, onPatch, onNext }: WhatStepProps) {
             </Tabs>
           </Field>
 
-          <Field label="Frame rate">
+          <Field label="프레임 레이트">
             <Tabs
               value={s.fps}
               onValueChange={(v) => onPatch({ fps: v as FpsChoice })}
@@ -80,7 +80,7 @@ export function WhatStep({ settings: s, ctx, onPatch, onNext }: WhatStepProps) {
             >
               <TabsList className="w-full">
                 {FPS_CHOICES.map((f) => (
-                  <TabItem key={f} value={f} label={f === "source" ? "Source" : f} />
+                  <TabItem key={f} value={f} label={f === "source" ? "원본" : f} />
                 ))}
               </TabsList>
             </Tabs>
@@ -91,7 +91,7 @@ export function WhatStep({ settings: s, ctx, onPatch, onNext }: WhatStepProps) {
               cannot shove the track around as the words change width. */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-baseline justify-between gap-2">
-              <span className="text-[12px] font-medium text-muted-foreground">Quality</span>
+              <span className="text-[12px] font-medium text-muted-foreground">품질</span>
               <span className="text-[12px] tabular-nums text-muted-foreground">{s.quality} · {qualityLabel(s.quality)}</span>
             </div>
             <Slider
@@ -102,24 +102,24 @@ export function WhatStep({ settings: s, ctx, onPatch, onNext }: WhatStepProps) {
               step={5}
               size="compact"
               showValue={false}
-              label="Quality"
+              label="품질"
             />
           </div>
 
-          <Field label="Range">
+          <Field label="범위">
             <Tabs value={s.range} onValueChange={(v) => onPatch({ range: v as Range })} size="compact">
               <TabsList className="w-full">
-                <TabItem value="whole" label="Whole" />
-                <TabItem value="inout" label="In → out" disabled={!ctx.hasInOut} />
+                <TabItem value="whole" label="전체" />
+                <TabItem value="inout" label="시작점 → 끝점" disabled={!ctx.hasInOut} />
               </TabsList>
             </Tabs>
-            {!ctx.hasInOut && <p className="text-[11px] text-muted-foreground">Set in and out points on the timeline to export a range.</p>}
+            {!ctx.hasInOut && <p className="text-[11px] text-muted-foreground">타임라인에서 시작점과 끝점을 지정하면 범위를 내보낼 수 있습니다.</p>}
           </Field>
         </div>
       </div>
 
-      <Footer left={<span className="truncate">{specLine(s, ctx)} · ~{fileSize(estimateBytes(s, ctx))}</span>}>
-        <Button trailingIcon={ArrowRight} onClick={onNext}>Next</Button>
+      <Footer left={<span className="truncate">{specLine(s, ctx)} · 약 {fileSize(estimateBytes(s, ctx))}</span>}>
+        <Button trailingIcon={ArrowRight} onClick={onNext}>다음</Button>
       </Footer>
     </>
   );
@@ -128,9 +128,9 @@ export function WhatStep({ settings: s, ctx, onPatch, onNext }: WhatStepProps) {
 // ── Step 2 · Where ───────────────────────────────────────
 
 const DESTINATIONS: readonly { id: Destination; label: string; hint: string; icon: typeof Download; disabled?: boolean }[] = [
-  { id: "download", label: "Download", hint: "Save to this computer", icon: Download },
-  { id: "drive", label: "Save to Drive", hint: "Not available yet", icon: Cloud, disabled: true },
-  { id: "link", label: "Copy link", hint: "Copy this editor's address", icon: Link2 },
+  { id: "download", label: "다운로드", hint: "이 컴퓨터에 저장합니다", icon: Download },
+  { id: "drive", label: "드라이브에 저장", hint: "아직 준비 중", icon: Cloud, disabled: true },
+  { id: "link", label: "링크 복사", hint: "이 편집 화면의 주소를 복사합니다", icon: Link2 },
 ];
 
 export interface WhereStepProps {
@@ -149,7 +149,7 @@ export function WhereStep({ settings: s, ctx, destination, onDestination, name, 
   return (
     <>
       <div className="grid flex-1 content-start gap-5 overflow-y-auto p-6">
-        <Field label="Destination">
+        <Field label="저장 위치">
           <div className="grid grid-cols-3 gap-2">
             {DESTINATIONS.map((d) => {
               const selected = destination === d.id;
@@ -178,7 +178,7 @@ export function WhereStep({ settings: s, ctx, destination, onDestination, name, 
                 </button>
               );
               return d.disabled ? (
-                <Tooltip key={d.id} content="Coming soon">{card}</Tooltip>
+                <Tooltip key={d.id} content="준비 중">{card}</Tooltip>
               ) : (
                 card
               );
@@ -186,38 +186,38 @@ export function WhereStep({ settings: s, ctx, destination, onDestination, name, 
           </div>
         </Field>
 
-        <Field label="File name">
+        <Field label="파일 이름">
           <div className="flex items-center gap-2">
             <input
               value={name}
               onChange={(e) => onName(e.target.value)}
               spellCheck={false}
-              aria-label="File name"
+              aria-label="파일 이름"
               className="h-9 min-w-0 flex-1 rounded-md bg-surface-3 px-2.5 text-[13px] text-foreground outline-none ring-1 ring-inset ring-border focus-visible:ring-2 focus-visible:ring-ring"
             />
             <span className="shrink-0 text-[12px] tabular-nums text-muted-foreground">.{PROJECT_FILE_EXT}</span>
           </div>
-          <p className="text-[11px] text-muted-foreground">This build writes a project file, so the name ends in .{PROJECT_FILE_EXT}.</p>
+          <p className="text-[11px] text-muted-foreground">이 버전은 프로젝트 파일을 저장하므로 이름 끝에 .{PROJECT_FILE_EXT}이 붙습니다.</p>
         </Field>
 
         <div className="rounded-lg bg-surface-4 p-3 text-[12px]">
           <div className="flex justify-between gap-3">
-            <span className="text-muted-foreground">Output</span>
+            <span className="text-muted-foreground">출력</span>
             <span className="truncate">{specLine(s, ctx)}</span>
           </div>
           <div className="mt-1 flex justify-between gap-3">
-            <span className="text-muted-foreground">Length</span>
+            <span className="text-muted-foreground">길이</span>
             <span className="tabular-nums">{shortDuration(rangeSeconds(s, ctx))}</span>
           </div>
           <div className="mt-1 flex justify-between gap-3">
-            <span className="text-muted-foreground">Estimated size</span>
-            <span className="tabular-nums">~{fileSize(estimateBytes(s, ctx))}</span>
+            <span className="text-muted-foreground">예상 용량</span>
+            <span className="tabular-nums">약 {fileSize(estimateBytes(s, ctx))}</span>
           </div>
         </div>
       </div>
 
-      <Footer left={<Button variant="ghost" leadingIcon={ArrowLeft} onClick={onBack}>Back</Button>}>
-        <Button leadingIcon={Upload} onClick={onRender} disabled={name.trim().length === 0}>Render</Button>
+      <Footer left={<Button variant="ghost" leadingIcon={ArrowLeft} onClick={onBack}>이전</Button>}>
+        <Button leadingIcon={Upload} onClick={onRender} disabled={name.trim().length === 0}>렌더링 시작</Button>
       </Footer>
     </>
   );

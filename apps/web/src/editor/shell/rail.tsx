@@ -25,10 +25,10 @@ export const FLYOUT_W = 280;
 const MediaFlyout: ComponentType<{ filter?: "audio" }> = MediaPanel;
 
 export const TOOLS: { id: RailTool; label: string; icon: LucideIcon; key: string }[] = [
-  { id: "media", label: "Media", icon: Film, key: "1" },
-  { id: "text", label: "Text", icon: Type, key: "2" },
-  { id: "effects", label: "Effects", icon: Sparkles, key: "3" },
-  { id: "audio", label: "Audio", icon: Music, key: "4" },
+  { id: "media", label: "미디어", icon: Film, key: "1" },
+  { id: "text", label: "텍스트", icon: Type, key: "2" },
+  { id: "effects", label: "효과", icon: Sparkles, key: "3" },
+  { id: "audio", label: "오디오", icon: Music, key: "4" },
 ];
 
 function RailButton({
@@ -45,7 +45,7 @@ function RailButton({
   onClick: () => void;
 }) {
   return (
-    <Tooltip content={`${active ? "Close" : "Open"} ${label} (${shortcut})`} side="right">
+    <Tooltip content={`${label} ${active ? "닫기" : "열기"} (${shortcut})`} side="right">
       <button
         type="button"
         aria-pressed={active}
@@ -76,7 +76,7 @@ export function ToolRail() {
   const rail = useEditor((s) => s.uiPanels.rail);
   const open = useEditor((s) => s.uiPanels.mediaPanel);
   return (
-    <nav aria-label="Tools" className="flex shrink-0 flex-col border-r border-border bg-surface-2" style={{ width: RAIL_W }}>
+    <nav aria-label="도구" className="flex shrink-0 flex-col border-r border-border bg-surface-2" style={{ width: RAIL_W }}>
       {TOOLS.map((t) => (
         <RailButton
           key={t.id}
@@ -126,7 +126,7 @@ export function ToolFlyout() {
               <Button
                 variant="ghost"
                 size="icon-compact"
-                aria-label="Close panel"
+                aria-label="패널 닫기"
                 className="ml-auto"
                 onClick={() => actions.setUi({ mediaPanel: false })}
               >

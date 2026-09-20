@@ -16,7 +16,7 @@ import { NewTile, SkeletonTile, Tile, enterItem, matchesQuery, type TileActions 
 
 type Filter = "all" | Aspect;
 const FILTERS: { value: Filter; label: string }[] = [
-  { value: "all", label: "All" },
+  { value: "all", label: "전체" },
   { value: "16:9", label: "16:9" },
   { value: "9:16", label: "9:16" },
   { value: "1:1", label: "1:1" },
@@ -97,15 +97,15 @@ export function HomePage() {
         <Wordmark />
         <div className="ml-auto flex items-center gap-2">
           <InputGroup size="compact" className="w-56">
-            <InputField index={0} label="Search projects" labelHidden icon={Search} placeholder="Search projects" value={query} onChange={setQuery} />
+            <InputField index={0} label="프로젝트 검색" labelHidden icon={Search} placeholder="프로젝트 검색" value={query} onChange={setQuery} />
           </InputGroup>
-          <Tooltip content={theme === "dark" ? "Switch to light" : "Switch to dark"} side="bottom">
-            <Button variant="ghost" size="icon-compact" aria-label="Toggle theme" onClick={toggle}>
+          <Tooltip content={theme === "dark" ? "밝은 테마" : "어두운 테마"} side="bottom">
+            <Button variant="ghost" size="icon-compact" aria-label="테마 전환" onClick={toggle}>
               {theme === "dark" ? <Sun /> : <Moon />}
             </Button>
           </Tooltip>
           <Button size="compact" leadingIcon={Plus} onClick={() => setSheetOpen(true)}>
-            New project
+            새 프로젝트
           </Button>
         </div>
       </header>
@@ -114,13 +114,13 @@ export function HomePage() {
         <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-8">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="text-[22px] font-semibold tracking-[-0.02em]">Projects</h1>
+              <h1 className="text-[22px] font-semibold tracking-[-0.02em]">프로젝트</h1>
               <p className="mt-1 text-[13px] text-muted-foreground">
-                {loaded ? `${visible.length} of ${projects.length} · sorted by last edited` : "Loading projects…"}
+                {loaded ? `${projects.length}개 중 ${visible.length}개 · 최근 수정 순` : "프로젝트 불러오는 중…"}
               </p>
             </div>
             <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)} size="compact">
-              <TabsList aria-label="Filter by aspect">
+              <TabsList aria-label="화면 비율로 필터">
                 {FILTERS.map((f) => (
                   <TabItem key={f.value} value={f.value} label={f.label} />
                 ))}
@@ -144,7 +144,7 @@ export function HomePage() {
 
           {loaded && visible.length === 0 && (
             <p className="mt-16 text-center text-[13px] text-muted-foreground">
-              {projects.length === 0 ? "No projects yet. Create one to get started." : `No projects match “${query}”.`}
+              {projects.length === 0 ? "아직 프로젝트가 없습니다. 새 프로젝트를 만들어 시작하세요." : `“${query}”에 맞는 프로젝트가 없습니다.`}
             </p>
           )}
         </div>
@@ -161,7 +161,7 @@ function Wordmark() {
       <span aria-hidden className="grid size-5 place-items-center rounded-[5px] bg-foreground text-background">
         <span className="block size-2 rounded-[1px] border-[1.5px] border-current bg-background/0" />
       </span>
-      <span className="text-[13px] font-semibold tracking-[-0.01em]">OpenCut</span>
+      <span className="text-[13px] font-semibold tracking-[-0.01em]">AiccCut</span>
     </span>
   );
 }

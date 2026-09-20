@@ -59,7 +59,7 @@ export function Timeline() {
                 className="sticky left-0 z-10 flex shrink-0 items-end border-b border-r border-border bg-surface-3 px-2 pb-1 text-[10px] text-muted-foreground"
                 style={{ width: HEADER_W }}
               >
-                <span>Tracks</span>
+                <span>트랙</span>
                 <span className="ml-auto tabular-nums">{view.pps.toFixed(0)} px/s</span>
               </div>
               <Ruler view={view} onScrub={scrub} />
@@ -174,7 +174,7 @@ function TrimChip({ trim }: { trim: TrimState }) {
       className="pointer-events-none fixed z-50 rounded-md bg-surface-6 px-2 py-1 text-[11px] font-medium tabular-nums text-foreground shadow-surface-6"
       style={{ left: trim.clientX + 12, top: trim.clientY - 30 }}
     >
-      {formatDelta(trim.delta)} · {trim.duration.toFixed(2)} s
+      {formatDelta(trim.delta)} · {trim.duration.toFixed(2)}초
     </div>
   );
 }

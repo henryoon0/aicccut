@@ -16,12 +16,12 @@ export interface ChannelMeta {
 }
 
 export const CHANNELS: Record<Channel, ChannelMeta> = {
-  x: { key: "x", label: "Position X", unit: "px", min: -1920, max: 1920, step: 1, color: "#ff6b6b" },
-  y: { key: "y", label: "Position Y", unit: "px", min: -1920, max: 1920, step: 1, color: "#f4a261" },
-  scale: { key: "scale", label: "Scale", unit: "%", min: 0, max: 400, step: 1, color: "#2ec4b6" },
-  rotation: { key: "rotation", label: "Rotation", unit: "°", min: -360, max: 360, step: 1, color: "#ffd166" },
-  opacity: { key: "opacity", label: "Opacity", unit: "%", min: 0, max: 100, step: 1, color: "#5b6cff" },
-  blur: { key: "blur", label: "Blur", unit: "px", min: 0, max: 64, step: 0.5, color: "#c77dff" },
+  x: { key: "x", label: "위치 X", unit: "px", min: -1920, max: 1920, step: 1, color: "#ff6b6b" },
+  y: { key: "y", label: "위치 Y", unit: "px", min: -1920, max: 1920, step: 1, color: "#f4a261" },
+  scale: { key: "scale", label: "크기", unit: "%", min: 0, max: 400, step: 1, color: "#2ec4b6" },
+  rotation: { key: "rotation", label: "회전", unit: "°", min: -360, max: 360, step: 1, color: "#ffd166" },
+  opacity: { key: "opacity", label: "불투명도", unit: "%", min: 0, max: 100, step: 1, color: "#5b6cff" },
+  blur: { key: "blur", label: "블러", unit: "px", min: 0, max: 64, step: 0.5, color: "#c77dff" },
 };
 
 export const ALL_CHANNELS: Channel[] = ["x", "y", "scale", "rotation", "opacity", "blur"];
@@ -43,16 +43,16 @@ export function formatChannelValue(ch: Channel, v: number): string {
 // ── Easing ─────────────────────────────────────────────────
 
 export const EASING_PRESETS: { value: EasingPreset; label: string; bezier: [number, number, number, number] }[] = [
-  { value: "linear", label: "Linear", bezier: [0.33, 0.33, 0.67, 0.67] },
-  { value: "ease-in", label: "Ease in", bezier: [0.42, 0, 1, 1] },
-  { value: "ease-out", label: "Ease out", bezier: [0, 0, 0.58, 1] },
-  { value: "ease-in-out", label: "Ease in-out", bezier: [0.42, 0, 0.58, 1] },
-  { value: "spring", label: "Spring", bezier: [0.34, 1.56, 0.64, 1] },
+  { value: "linear", label: "일정하게", bezier: [0.33, 0.33, 0.67, 0.67] },
+  { value: "ease-in", label: "천천히 시작", bezier: [0.42, 0, 1, 1] },
+  { value: "ease-out", label: "천천히 끝", bezier: [0, 0, 0.58, 1] },
+  { value: "ease-in-out", label: "천천히 시작·끝", bezier: [0.42, 0, 0.58, 1] },
+  { value: "spring", label: "튕김", bezier: [0.34, 1.56, 0.64, 1] },
 ];
 
 /** Display label for an easing ("Custom" for explicit beziers). */
 export function easingLabel(e: Easing): string {
-  if (Array.isArray(e)) return "Custom";
+  if (Array.isArray(e)) return "직접 설정";
   return EASING_PRESETS.find((p) => p.value === e)?.label ?? e;
 }
 

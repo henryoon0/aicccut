@@ -65,32 +65,32 @@ export function TransportBar() {
         </div>
 
         <div className="flex items-center gap-0.5">
-          <IconButton icon={SkipBackIcon} label="Go to start" shortcut="Home" onClick={() => transport.goToStart()} />
-          <IconButton icon={ArrowLeft01Icon} label="Previous frame" shortcut="ArrowLeft" onClick={() => transport.stepFrames(-1)} />
+          <IconButton icon={SkipBackIcon} label="처음으로" shortcut="Home" onClick={() => transport.goToStart()} />
+          <IconButton icon={ArrowLeft01Icon} label="이전 프레임" shortcut="ArrowLeft" onClick={() => transport.stepFrames(-1)} />
           <IconButton
             icon={playing ? PauseIcon : PlayIcon}
-            label={playing ? "Pause" : "Play"}
+            label={playing ? "일시정지" : "재생"}
             shortcut="Space"
             size="icon"
             variant="secondary"
             onClick={() => transport.toggle()}
           />
-          <IconButton icon={ArrowRight01Icon} label="Next frame" shortcut="ArrowRight" onClick={() => transport.stepFrames(1)} />
-          <IconButton icon={SkipForwardIcon} label="Go to end" shortcut="End" onClick={() => transport.goToEnd()} />
-          <IconButton icon={RepeatIcon} label="Loop" shortcut="Alt+L" active={loop} onClick={() => transport.toggleLoop()} />
+          <IconButton icon={ArrowRight01Icon} label="다음 프레임" shortcut="ArrowRight" onClick={() => transport.stepFrames(1)} />
+          <IconButton icon={SkipForwardIcon} label="끝으로" shortcut="End" onClick={() => transport.goToEnd()} />
+          <IconButton icon={RepeatIcon} label="반복" shortcut="Alt+L" active={loop} onClick={() => transport.toggleLoop()} />
         </div>
 
         <div className="flex items-center justify-end gap-1">
-          <IconButton icon={FrameIcon} label="Safe areas" shortcut="Mod+'" active={safeAreas} onClick={() => actions.toggleUi("safeAreas")} />
-          <IconButton icon={Grid02Icon} label="Grid" shortcut="Mod+;" active={grid} onClick={() => actions.toggleUi("grid")} />
+          <IconButton icon={FrameIcon} label="안전 영역" shortcut="Mod+'" active={safeAreas} onClick={() => actions.toggleUi("safeAreas")} />
+          <IconButton icon={Grid02Icon} label="격자" shortcut="Mod+;" active={grid} onClick={() => actions.toggleUi("grid")} />
           <span className="mx-1 h-4 w-px bg-border" />
           <Tabs
             size="compact"
             value={zoom === "fit" ? "fit" : String(zoom)}
             onValueChange={(v) => actions.setUi({ previewZoom: v === "fit" ? "fit" : Number(v) })}
           >
-            <TabsList aria-label="Preview zoom">
-              <TabItem value="fit" label="Fit" />
+            <TabsList aria-label="미리보기 확대 비율">
+              <TabItem value="fit" label="맞춤" />
               <TabItem value="50" label="50%" />
               <TabItem value="100" label="100%" />
             </TabsList>
@@ -108,7 +108,7 @@ function Scrubber({ transport, duration, fps }: { transport: Transport; duration
   const time = useTime();
   return (
     <Slider
-      aria-label="Scrub"
+      aria-label="재생 위치"
       variant="scrubber"
       value={Math.min(time, duration)}
       onChange={(v) => {
@@ -174,7 +174,7 @@ function EditableTimecode({ transport, fps, duration }: { transport: Transport; 
             setDraft(timecode(clamp(t + (e.key === "ArrowUp" ? 1 / fps : -1 / fps), 0, duration), fps));
           }
         }}
-        aria-label="Current time"
+        aria-label="현재 시간"
         aria-invalid={invalid}
         className={cn(
           "h-7 w-[112px] rounded-md border bg-surface-3 px-2 font-mono text-[12px] tabular-nums text-foreground outline-none ring-2",
@@ -189,13 +189,13 @@ function EditableTimecode({ transport, fps, duration }: { transport: Transport; 
       side="top"
       content={
         <span className="flex items-center gap-1.5">
-          Click to type a time <Kbd>00:00:12.15</Kbd>
+          클릭해서 시간 입력 <Kbd>00:00:12.15</Kbd>
         </span>
       }
     >
       <button
         type="button"
-        aria-label="Current time"
+        aria-label="현재 시간"
         onClick={() => {
           transport.pause();
           setDraft(timecode(time, fps));

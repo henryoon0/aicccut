@@ -25,23 +25,23 @@ interface TextPreset {
 
 const PRESETS: TextPreset[] = [
   {
-    id: "title", name: "Title", hint: "Opening card, centred", sample: "훅(Hook)이란 무엇인가", duration: 5, x: 0, y: 0,
+    id: "title", name: "제목", hint: "첫 화면 제목, 가운데", sample: "훅(Hook)이란 무엇인가", duration: 5, x: 0, y: 0,
     style: { font: "Pretendard", size: 96, weight: 800, italic: false, tracking: -3, leading: 110, color: "#FFFFFF", align: "center" },
   },
   {
-    id: "lower-third", name: "Lower third", hint: "Speaker name, bottom left", sample: "이재윤 · AI Coffee Chat", duration: 4, x: -540, y: 330,
+    id: "lower-third", name: "이름표 자막", hint: "화자 이름, 왼쪽 아래", sample: "이재윤 · AI Coffee Chat", duration: 4, x: -540, y: 330,
     style: { font: "Inter", size: 44, weight: 600, italic: false, tracking: 0, leading: 120, color: "#FFD166", align: "left" },
   },
   {
-    id: "caption", name: "Caption", hint: "Subtitle band, bottom", sample: "훅은 도구 호출 앞뒤에 끼어드는 스크립트예요", duration: 3, x: 0, y: 400,
+    id: "caption", name: "자막", hint: "화면 아래 자막 띠", sample: "훅은 도구 호출 앞뒤에 끼어드는 스크립트예요", duration: 3, x: 0, y: 400,
     style: { font: "Noto Sans KR", size: 40, weight: 500, italic: false, tracking: 0, leading: 140, color: "#FFFFFF", align: "center" },
   },
   {
-    id: "callout", name: "Callout", hint: "Label pointing at the demo", sample: "PreToolUse", duration: 3, x: -380, y: -220,
+    id: "callout", name: "강조 표시", hint: "시연 화면 가리키기", sample: "PreToolUse", duration: 3, x: -380, y: -220,
     style: { font: "JetBrains Mono", size: 56, weight: 700, italic: false, tracking: 4, leading: 120, color: "#2EC4B6", align: "left" },
   },
   {
-    id: "quote", name: "Quote", hint: "Serif, wide, italic", sample: "“수료 다음 날부터 업무에 적용했어요”", duration: 6, x: 0, y: 0,
+    id: "quote", name: "인용", hint: "명조, 넓게, 기울임", sample: "“수료 다음 날부터 업무에 적용했어요”", duration: 6, x: 0, y: 0,
     style: { font: "Playfair Display", size: 72, weight: 500, italic: true, tracking: 0, leading: 125, color: "#F4F1EA", align: "center" },
   },
 ];
@@ -130,7 +130,7 @@ export function TextPanel() {
     <div className="flex h-full w-full min-h-0 flex-col bg-surface-2">
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
         <section className="flex flex-col gap-2">
-          <h3 className="text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">Presets</h3>
+          <h3 className="text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">프리셋</h3>
           <div className="flex flex-col gap-1.5">
             {PRESETS.map((p) => (
               <PresetCard key={p.id} preset={p} onPick={() => add(p)} />
@@ -140,32 +140,32 @@ export function TextPanel() {
 
         {api ? (
           <Card
-            title="Style"
+            title="스타일"
             resetDisabled={isDefaultTextStyle(api.text)}
             onReset={() => clip && actions.setClipText(clip.id, { ...DEFAULT_TEXT_STYLE })}
           >
-            <Field label="Content">
+            <Field label="내용">
               <Textarea
                 value={api.text.content}
                 onChange={(e) => api.patch({ content: e.target.value })}
-                placeholder="Type your text…"
+                placeholder="텍스트를 입력하세요…"
                 className="min-h-[72px] bg-surface-4 text-[13px] leading-relaxed"
               />
             </Field>
-            <Field label="Font">
+            <Field label="글꼴">
               <FontField api={api} />
             </Field>
             <TextMetrics api={api} />
-            <Field label="Alignment">
+            <Field label="정렬">
               <AlignRow api={api} />
             </Field>
-            <Field label="Colour">
+            <Field label="색상">
               <ColorRow api={api} />
             </Field>
           </Card>
         ) : (
           <p className="rounded-lg bg-surface-3 p-3 text-[12px] text-muted-foreground shadow-surface-2">
-            Select a text clip to edit its content and style.
+            텍스트 클립을 선택하면 내용과 스타일을 편집할 수 있습니다.
           </p>
         )}
       </div>

@@ -99,7 +99,7 @@ function InlineName({ project, editing, onCommit, onCancel, className }: { proje
       onKeyDown={onKey}
       onBlur={() => onCommit(draft)}
       onClick={(e) => e.stopPropagation()}
-      aria-label="Project name"
+      aria-label="프로젝트 이름"
       className={cn("relative z-30 -mx-1 block w-full min-w-0 rounded-sm bg-surface-1 px-1 outline-none ring-1 ring-[color:var(--focus-ring,#6B97FF)]", className)}
     />
   );
@@ -116,7 +116,7 @@ function ProjectMenu({ project, api, className }: { project: ProjectSummary; api
           <Button
             variant="ghost"
             size="icon-compact"
-            aria-label={`Actions for ${project.name}`}
+            aria-label={`${project.name} 메뉴`}
             data-open={open || undefined}
             onClick={(e) => e.stopPropagation()}
             className={cn(
@@ -129,10 +129,10 @@ function ProjectMenu({ project, api, className }: { project: ProjectSummary; api
         }
       />
       <DropdownContent align="end" className="min-w-40">
-        <MenuItem index={0} icon={Pencil} label="Rename" onSelect={() => api.startRename(project.id)} />
-        <MenuItem index={1} icon={Copy} label="Duplicate" onSelect={() => api.duplicate(project.id)} />
+        <MenuItem index={0} icon={Pencil} label="이름 바꾸기" onSelect={() => api.startRename(project.id)} />
+        <MenuItem index={1} icon={Copy} label="복제" onSelect={() => api.duplicate(project.id)} />
         <DropdownSeparator />
-        <MenuItem index={2} icon={Trash2} label="Delete" className="text-destructive" onSelect={() => api.askDelete(project.id)} />
+        <MenuItem index={2} icon={Trash2} label="삭제" className="text-destructive" onSelect={() => api.askDelete(project.id)} />
       </DropdownContent>
     </DropdownMenu>
   );
@@ -157,7 +157,7 @@ export function NewTile({ onClick }: { onClick: () => void }) {
         </span>
       </div>
       <div className="px-3.5 pb-3.5 pt-2">
-        <p className="text-[13px] font-medium">New project</p>
+        <p className="text-[13px] font-medium">새 프로젝트</p>
         <p className="mt-0.5 text-[12px] text-muted-foreground">16:9 · 30 fps · 1080p</p>
       </div>
     </button>
@@ -189,7 +189,7 @@ export function Tile({ project, api, highlighted }: { project: ProjectSummary; a
       <button
         type="button"
         onClick={() => api.open(project.id)}
-        aria-label={`Open ${project.name}`}
+        aria-label={`${project.name} 열기`}
         className={cn("absolute inset-0 z-20 rounded-[inherit] outline-none", FOCUS)}
       />
 
@@ -200,7 +200,7 @@ export function Tile({ project, api, highlighted }: { project: ProjectSummary; a
           className={cn("shadow-surface-4 transition-transform duration-200 ease-out group-hover/item:scale-[1.02] motion-reduce:transition-none", project.aspect === "16:9" ? "h-full w-full" : "h-[86%]")}
         />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black/70 to-transparent p-2.5 opacity-0 transition-opacity duration-150 group-hover/item:opacity-100 group-focus-within/item:opacity-100">
-          <span className="text-[11px] font-medium tabular-nums text-white">{project.duration ? shortDuration(project.duration) : "Empty"}</span>
+          <span className="text-[11px] font-medium tabular-nums text-white">{project.duration ? shortDuration(project.duration) : "비어 있음"}</span>
           <span className="flex gap-1">
             <Badge size="compact" className="bg-white/15 text-white">{project.aspect}</Badge>
             <Badge size="compact" className="bg-white/15 text-white">{project.fps} fps</Badge>
@@ -213,12 +213,12 @@ export function Tile({ project, api, highlighted }: { project: ProjectSummary; a
           <InlineName project={project} editing={editing} onCommit={(n) => api.commitRename(project.id, n)} onCancel={api.cancelRename} className="text-[13px] font-medium" />
           {confirming ? (
             <div className="relative z-30 mt-1 flex items-center gap-1.5 text-[12px]">
-              <span className="text-destructive">Delete?</span>
+              <span className="text-destructive">삭제할까요?</span>
               <Button variant="secondary" size="compact" className="h-6 px-2 text-[11px] text-destructive" onClick={() => api.confirmDelete(project.id)}>
-                Delete
+                삭제
               </Button>
               <Button variant="ghost" size="compact" className="h-6 px-2 text-[11px]" onClick={api.cancelDelete}>
-                Cancel
+                취소
               </Button>
             </div>
           ) : (
@@ -227,7 +227,7 @@ export function Tile({ project, api, highlighted }: { project: ProjectSummary; a
                 <span>{relativeTime(project.updatedAt)}</span>
               </Tooltip>
               <span aria-hidden>·</span>
-              <span className="tabular-nums">{project.clipCount} clips</span>
+              <span className="tabular-nums">클립 {project.clipCount}개</span>
             </p>
           )}
         </div>

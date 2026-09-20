@@ -749,7 +749,7 @@ export interface CommandMenuInputProps
 
 const CommandMenuInput = forwardRef<HTMLInputElement, CommandMenuInputProps>(
   (
-    { className, placeholder = "Type a command or search…", icon, onKeyDown, ...props },
+    { className, placeholder = "명령을 입력하세요…", icon, onKeyDown, ...props },
     ref
   ) => {
     const SearchIcon = useIcon("search");
@@ -1355,9 +1355,9 @@ const CommandMenuFooter = forwardRef<HTMLDivElement, CommandMenuFooterProps>(
     const row = activeIndex === null ? undefined : rows[activeIndex];
     const action = hints ? null : row ? (row.action ?? row.label) : null;
     const resolved: readonly CommandMenuHint[] = hints ?? [
-      { label: "Select", keys: ["up", "down"] },
-      ...(tabsMounted ? [{ label: "Tabs", keys: ["left", "right"] }] : []),
-      ...(dialog ? [{ label: "Close", keys: "esc" }] : []),
+      { label: "이동", keys: ["up", "down"] },
+      ...(tabsMounted ? [{ label: "탭", keys: ["left", "right"] }] : []),
+      ...(dialog ? [{ label: "닫기", keys: "esc" }] : []),
     ];
     return (
       <div

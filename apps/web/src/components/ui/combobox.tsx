@@ -752,7 +752,7 @@ const ComboboxInput = forwardRef<HTMLInputElement, ComboboxInputProps>(
       className,
       variant,
       icon: Icon,
-      placeholder = "Search…",
+      placeholder = "검색…",
       error,
       clearable = false,
       size,
@@ -813,7 +813,7 @@ const ComboboxChips = forwardRef<HTMLInputElement, ComboboxChipsProps>(
       className,
       variant,
       icon: Icon,
-      placeholder = "Search…",
+      placeholder = "검색…",
       error,
       clearable = false,
       size,
@@ -883,7 +883,7 @@ const ComboboxChips = forwardRef<HTMLInputElement, ComboboxChipsProps>(
                     <span className="truncate">{label}</span>
                     <button
                       type="button"
-                      aria-label={`Remove ${label}`}
+                      aria-label={`${label} 제거`}
                       disabled={disabled}
                       onClick={() => remove(v)}
                       className={cn(chipRemoveClass, shape.variant === "pill" && "rounded-full", compact ? "size-4" : "size-5")}

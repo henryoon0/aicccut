@@ -19,7 +19,7 @@ import { Toaster } from "#/components/ui/sonner";
 import { COMMAND_LIST, useActions, useCommandContext, useEditor } from "#/editor/core";
 import { Elevated } from "#/lib/elevated";
 import { spring } from "#/lib/springs";
-import { COMMAND_ICONS } from "./data";
+import { COMMAND_ICONS, groupLabel } from "./data";
 import { isEnabled, loadRecent, useRunCommand } from "./run";
 
 /** The toast host plus the palette surface. Renders no panel while closed. */
@@ -27,7 +27,7 @@ export function CommandPalette() {
   const open = useEditor((s) => s.uiPanels.palette);
   return (
     <>
-      <Toaster position="bottom-right" />
+      <Toaster position="bottom-right" containerAriaLabel="알림" />
       <AnimatePresence>{open && <PaletteSurface key="command-palette" />}</AnimatePresence>
     </>
   );
@@ -60,9 +60,9 @@ function PaletteSurface() {
       value: c.id,
       label: c.label,
       shortcut: c.shortcut,
-      group: c.group,
+      group: groupLabel(c.group),
       icon: COMMAND_ICONS[c.id],
-      keywords: [c.group, ...(c.keywords ?? [])],
+      keywords: [c.group, groupLabel(c.group), ...(c.keywords ?? [])],
       disabled: !isEnabled(c, ctx),
     }));
   }, [ctx, gate]);
@@ -123,7 +123,7 @@ function PaletteSurface() {
         ref={rootRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Command palette"
+        aria-label="명령 팔레트"
         className="fixed left-1/2 top-[16%] z-[61] w-[480px] max-w-[calc(100vw-2rem)]"
         style={{ x: "-50%", transformOrigin: "50% 0%" }}
         initial={{ opacity: 0, scale: 0.97, y: -6 }}
@@ -138,20 +138,20 @@ function PaletteSurface() {
             query={query}
             onQueryChange={setQuery}
             suggestions={recent}
-            suggestionsLabel="Recent"
+            suggestionsLabel="최근"
             size="compact"
             className="max-h-[380px]"
           >
-            <CommandMenuInput autoFocus placeholder="Run a command…" onKeyDown={onKeyDown} />
+            <CommandMenuInput autoFocus placeholder="명령을 입력하세요…" onKeyDown={onKeyDown} />
             <CommandMenuList className="px-1 pb-1">
-              <CommandMenuEmpty>No command matches.</CommandMenuEmpty>
+              <CommandMenuEmpty>일치하는 명령이 없습니다.</CommandMenuEmpty>
             </CommandMenuList>
             <CommandMenuFooter
               className="border-t border-border/60"
               hints={[
-                { label: "Move", keys: ["up", "down"] },
-                { label: "Run", keys: "enter" },
-                { label: "Back", keys: "esc" },
+                { label: "이동", keys: ["up", "down"] },
+                { label: "실행", keys: "enter" },
+                { label: "닫기", keys: "esc" },
               ]}
             />
           </CommandMenu>

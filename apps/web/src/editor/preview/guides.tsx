@@ -84,11 +84,11 @@ export function SafeAreas({ project }: GuideProps) {
       />
       <line x1={w / 2 - tick} y1={h / 2} x2={w / 2 + tick} y2={h / 2} stroke="white" strokeOpacity={0.6} strokeWidth={1} vectorEffect="non-scaling-stroke" />
       <line x1={w / 2} y1={h / 2 - tick} x2={w / 2} y2={h / 2 + tick} stroke="white" strokeOpacity={0.6} strokeWidth={1} vectorEffect="non-scaling-stroke" />
-      <text x={w * 0.05 + 8} y={h * 0.95 - 10} fill="white" fillOpacity={0.6} fontSize={label} fontFamily="Inter Variable, sans-serif">
-        Action safe 90%
+      <text x={w * 0.05 + 8} y={h * 0.95 - 10} fill="white" fillOpacity={0.6} fontSize={label} fontFamily="Pretendard Variable, Inter Variable, sans-serif">
+        화면 안전 영역 90%
       </text>
-      <text x={w * 0.1 + 8} y={h * 0.9 - 10} fill="white" fillOpacity={0.6} fontSize={label} fontFamily="Inter Variable, sans-serif">
-        Title safe 80%
+      <text x={w * 0.1 + 8} y={h * 0.9 - 10} fill="white" fillOpacity={0.6} fontSize={label} fontFamily="Pretendard Variable, Inter Variable, sans-serif">
+        자막 안전 영역 80%
       </text>
     </svg>
   );

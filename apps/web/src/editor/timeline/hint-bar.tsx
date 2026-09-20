@@ -34,35 +34,35 @@ export function HintBar({ trim }: { trim: TrimState | null }) {
       {trim ? (
         <>
           <span className="font-medium text-foreground">
-            Trimming {trim.edge} of {trim.label}
+            {trim.label} {trim.edge === "start" ? "시작점" : "끝점"} 트림 중
           </span>
           <span className={cn("font-medium tabular-nums", trim.delta < 0 ? "text-destructive" : "text-foreground")}>
             {formatDelta(trim.delta)}
           </span>
-          <span className="tabular-nums">→ {trim.duration.toFixed(2)} s</span>
-          {ripple && <span className="rounded-sm bg-selected px-1.5 py-0.5 text-foreground">ripple: following clips move</span>}
-          <span className="ml-auto">Release to commit</span>
+          <span className="tabular-nums">→ {trim.duration.toFixed(2)}초</span>
+          {ripple && <span className="rounded-sm bg-selected px-1.5 py-0.5 text-foreground">리플: 뒤 클립이 따라 움직입니다</span>}
+          <span className="ml-auto">놓으면 적용됩니다</span>
         </>
       ) : selection.length === 0 ? (
         <>
-          <span>Click a clip to select</span>
-          {hint("Shift", "click adds to the selection")}
+          <span>클립을 클릭해 선택</span>
+          {hint("Shift", "클릭하면 선택에 추가")}
           <span className="flex items-center gap-1">
-            <Kbd>Right-click</Kbd> actions
+            <Kbd>우클릭</Kbd> 메뉴
           </span>
-          {hint("Space", "play")}
+          {hint("Space", "재생")}
           <RippleBadge ripple={ripple} caps={caps} />
         </>
       ) : (
         <>
-          <span className="truncate font-medium text-foreground">{selection.length === 1 ? label : `${selection.length} clips`}</span>
-          {hint("S", "split")}
-          {hint("[", "trim start")}
-          {hint("]", "trim end")}
-          {hint("Backspace", ripple ? "ripple delete" : "delete")}
-          {hint("Mod+D", "duplicate")}
-          {hint("Shift+M", "mute")}
-          {hint("I", "properties")}
+          <span className="truncate font-medium text-foreground">{selection.length === 1 ? label : `클립 ${selection.length}개`}</span>
+          {hint("S", "분할")}
+          {hint("[", "시작점 트림")}
+          {hint("]", "끝점 트림")}
+          {hint("Backspace", ripple ? "리플 삭제" : "삭제")}
+          {hint("Mod+D", "복제")}
+          {hint("Shift+M", "음소거")}
+          {hint("I", "속성")}
           <RippleBadge ripple={ripple} caps={caps} />
         </>
       )}
@@ -76,7 +76,7 @@ function RippleBadge({ ripple, caps }: { ripple: boolean; caps: (s: string) => s
       {caps("R").map((k) => (
         <Kbd key={k}>{k}</Kbd>
       ))}
-      ripple {ripple ? "on" : "off"}
+      리플 {ripple ? "켬" : "꺼짐"}
     </span>
   );
 }

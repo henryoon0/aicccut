@@ -55,7 +55,7 @@ export function Playhead({ view, onScrub }: { view: Viewport; onScrub: (e: React
       <div
         className="pointer-events-auto absolute left-0 top-0 -translate-x-1/2 cursor-ew-resize"
         onPointerDown={onScrub}
-        aria-label="Playhead"
+        aria-label="재생 헤드"
       >
         <div className="mt-[14px] h-0 w-0 border-x-[6px] border-t-[8px] border-x-transparent border-t-destructive" />
       </div>

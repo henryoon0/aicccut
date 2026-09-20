@@ -81,7 +81,7 @@ export function ClipView({
             >
               {clip.muted && <HugeiconsIcon icon={VolumeOffIcon} size={9} strokeWidth={2} className="shrink-0" />}
               <span className={cn("truncate", clip.muted && "line-through opacity-70")}>{clip.label}</span>
-              {width > 140 && <span className="ml-auto tabular-nums opacity-70">{clip.duration.toFixed(1)}s</span>}
+              {width > 140 && <span className="ml-auto tabular-nums opacity-70">{clip.duration.toFixed(1)}초</span>}
             </div>
             {keyframes.length > 0 && !lanesOpen && (
               <div className="pointer-events-none absolute inset-x-0 bottom-0.5 h-2">

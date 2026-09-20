@@ -147,7 +147,7 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
     gridRef.current?.querySelector<HTMLElement>(`[data-id="${items[next].id}"]`)?.scrollIntoView({ block: "nearest" });
   };
 
-  const label = lock === "audio" ? "Audio" : "Media";
+  const label = lock === "audio" ? "오디오" : "미디어";
   const showDropzone = scope.length === 0 && pending.length === 0;
 
   return (
@@ -155,14 +155,14 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
       {!showDropzone && (
         <div className="flex shrink-0 items-center gap-1 px-3 pt-2.5">
           <span data-testid="media-count" className="text-[11px] tabular-nums text-muted-foreground">
-            {items.length} item{items.length === 1 ? "" : "s"}
+            항목 {items.length}개
           </span>
           <div className="ml-auto flex items-center gap-1">
-            <Tooltip content={sortDir === "asc" ? "Ascending" : "Descending"} side="bottom">
+            <Tooltip content={sortDir === "asc" ? "오름차순" : "내림차순"} side="bottom">
               <Button
                 variant="ghost"
                 size="icon-compact"
-                aria-label="Toggle sort direction"
+                aria-label="정렬 방향 바꾸기"
                 onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
               >
                 {sortDir === "asc" ? <ArrowUpAZ size={14} strokeWidth={1.5} /> : <ArrowDownAZ size={14} strokeWidth={1.5} />}
@@ -171,25 +171,25 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
             <DropdownMenu size="compact">
               <DropdownTrigger
                 render={
-                  <Button variant="ghost" size="compact" trailingIcon={ChevronDown} className="whitespace-nowrap" aria-label={`Sort by ${SORT_LABEL[sortKey]}`}>
+                  <Button variant="ghost" size="compact" trailingIcon={ChevronDown} className="whitespace-nowrap" aria-label={`정렬 기준: ${SORT_LABEL[sortKey]}`}>
                     {SORT_SHORT[sortKey]}
                   </Button>
                 }
               />
               <DropdownContent align="end" checkedIndex={SORT_KEYS.indexOf(sortKey)}>
-                <DropdownLabel>Sort by</DropdownLabel>
+                <DropdownLabel>정렬 기준</DropdownLabel>
                 {SORT_KEYS.map((k, i) => (
                   <MenuItem key={k} index={i} label={SORT_LABEL[k]} checked={sortKey === k} onSelect={() => setSortKey(k)} />
                 ))}
                 <DropdownSeparator />
                 <MenuItem
                   index={SORT_KEYS.length}
-                  label={sortDir === "asc" ? "Ascending" : "Descending"}
+                  label={sortDir === "asc" ? "오름차순" : "내림차순"}
                   onSelect={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
                 />
               </DropdownContent>
             </DropdownMenu>
-            <Button variant="ghost" size="compact" className="whitespace-nowrap" onClick={picker.open}>Import</Button>
+            <Button variant="ghost" size="compact" className="whitespace-nowrap" onClick={picker.open}>가져오기</Button>
           </div>
         </div>
       )}
@@ -203,21 +203,21 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
             <InputGroup size="compact" className="w-full">
               <InputField
                 index={0}
-                label={`Search ${label.toLowerCase()}`}
+                label={`${label} 검색`}
                 labelHidden
                 icon={Search}
-                placeholder="Search name, 4K, 60fps…"
+                placeholder="이름·4K·60fps로 찾기…"
                 value={query}
                 onChange={setQuery}
               />
             </InputGroup>
             {!lock && (
               <Tabs size="compact" value={filter} onValueChange={(v) => setFilter(v as Filter)}>
-                <TabsList aria-label="Filter by kind">
-                  <TabItem value="all" label={`All ${counts.all}`} />
-                  <TabItem value="video" label={`Video ${counts.video}`} />
-                  <TabItem value="audio" label={`Audio ${counts.audio}`} />
-                  <TabItem value="image" label={`Image ${counts.image}`} />
+                <TabsList aria-label="종류별 보기">
+                  <TabItem value="all" label={`전체 ${counts.all}`} />
+                  <TabItem value="video" label={`영상 ${counts.video}`} />
+                  <TabItem value="audio" label={`오디오 ${counts.audio}`} />
+                  <TabItem value="image" label={`이미지 ${counts.image}`} />
                 </TabsList>
               </Tabs>
             )}
@@ -228,7 +228,7 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
               <div
                 ref={gridRef}
                 role="listbox"
-                aria-label={`${label} library`}
+                aria-label={`${label} 목록`}
                 tabIndex={0}
                 onKeyDown={onKeyDown}
                 onFocus={() => { if (!selected && items[0]) setSelected(items[0].id); }}
@@ -256,7 +256,7 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
                 ))}
                 {items.length === 0 && pending.length === 0 && (
                   <p className="col-span-2 py-16 text-center text-xs text-muted-foreground">
-                    {query ? `No media matches “${query}”.` : "Nothing here yet. Drop files or press Import."}
+                    {query ? `“${query}”에 맞는 미디어가 없습니다.` : "아직 비어 있습니다. 파일을 끌어다 놓거나 가져오기를 누르세요."}
                   </p>
                 )}
               </div>
@@ -267,7 +267,7 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
 
       {!showDropzone && (
         <footer className="flex h-8 shrink-0 items-center gap-2 border-t border-border px-3 text-[11px] text-muted-foreground">
-          <span>Drag to timeline · Enter adds at playhead</span>
+          <span>타임라인으로 끌어 놓기 · Enter로 재생 헤드에 추가</span>
         </footer>
       )}
 

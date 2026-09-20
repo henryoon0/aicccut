@@ -29,7 +29,7 @@ const FPS_OPTIONS: readonly { value: Fps; label: string }[] = [
 const RESOLUTIONS: readonly { value: Resolution; label: string }[] = [
   { value: "1080p", label: "1080p" },
   { value: "4k", label: "4K" },
-  { value: "custom", label: "Custom" },
+  { value: "custom", label: "직접 입력" },
 ];
 
 interface Draft { name: string; aspect: Aspect; fps: Fps; resolution: Resolution; customWidth: number; customHeight: number }
@@ -80,7 +80,7 @@ export function NewProjectDialog({ open, onOpenChange, onCreate }: { open: boole
     }
   }, [open]);
 
-  const nameError = touched && draft.name.trim() === "" ? "Give the project a name." : undefined;
+  const nameError = touched && draft.name.trim() === "" ? "프로젝트 이름을 입력하세요." : undefined;
   const patch = (p: Partial<Draft>) => setDraft((d) => ({ ...d, ...p }));
 
   const submit = async () => {
@@ -106,17 +106,17 @@ export function NewProjectDialog({ open, onOpenChange, onCreate }: { open: boole
         }}
       >
         <DialogHeader>
-          <DialogTitle>New project</DialogTitle>
-          <DialogDescription>Name it and pick a format. You can change any of this later.</DialogDescription>
+          <DialogTitle>새 프로젝트</DialogTitle>
+          <DialogDescription>이름을 정하고 형식을 고르세요. 나중에 언제든 바꿀 수 있습니다.</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-5">
           <InputGroup>
-            <InputField label="Name" index={0} placeholder="e.g. Claude Code 강의 7화" value={draft.name} onChange={(v) => patch({ name: v })} onBlur={() => setTouched(true)} error={nameError} autoFocus />
+            <InputField label="이름" index={0} placeholder="예: Claude Code 강의 7화" value={draft.name} onChange={(v) => patch({ name: v })} onBlur={() => setTouched(true)} error={nameError} autoFocus />
           </InputGroup>
 
           <fieldset className="flex flex-col gap-2">
-            <legend className="text-[12px] font-medium text-muted-foreground">Aspect ratio</legend>
+            <legend className="text-[12px] font-medium text-muted-foreground">화면 비율</legend>
             <div role="radiogroup" className="grid grid-cols-4 gap-2">
               {ASPECTS.map((a) => {
                 const selected = a.id === draft.aspect;
@@ -144,7 +144,7 @@ export function NewProjectDialog({ open, onOpenChange, onCreate }: { open: boole
 
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-muted-foreground">Frame rate</span>
+              <span className="text-[12px] font-medium text-muted-foreground">프레임 레이트</span>
               <Select value={String(draft.fps)} onValueChange={(v) => { const n = Number(v); if (isFps(n)) patch({ fps: n }); }}>
                 <SelectTrigger />
                 <SelectContent>
@@ -155,7 +155,7 @@ export function NewProjectDialog({ open, onOpenChange, onCreate }: { open: boole
               </Select>
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-muted-foreground">Resolution</span>
+              <span className="text-[12px] font-medium text-muted-foreground">해상도</span>
               <Select value={draft.resolution} onValueChange={(v) => { if (isResolution(v)) patch({ resolution: v }); }}>
                 <SelectTrigger />
                 <SelectContent>
@@ -169,8 +169,8 @@ export function NewProjectDialog({ open, onOpenChange, onCreate }: { open: boole
 
           {draft.resolution === "custom" && (
             <InputGroup size="compact">
-              <InputField label="Width" index={0} inputMode="numeric" value={String(draft.customWidth)} onChange={(v) => patch({ customWidth: Math.max(16, Number(v.replace(/\D/g, "")) || 0) })} />
-              <InputField label="Height" index={1} inputMode="numeric" value={String(draft.customHeight)} onChange={(v) => patch({ customHeight: Math.max(16, Number(v.replace(/\D/g, "")) || 0) })} />
+              <InputField label="가로" index={0} inputMode="numeric" value={String(draft.customWidth)} onChange={(v) => patch({ customWidth: Math.max(16, Number(v.replace(/\D/g, "")) || 0) })} />
+              <InputField label="세로" index={1} inputMode="numeric" value={String(draft.customHeight)} onChange={(v) => patch({ customHeight: Math.max(16, Number(v.replace(/\D/g, "")) || 0) })} />
             </InputGroup>
           )}
 
@@ -181,9 +181,9 @@ export function NewProjectDialog({ open, onOpenChange, onCreate }: { open: boole
         </div>
 
         <div className="mt-6 flex justify-end gap-2">
-          <DialogClose render={<Button variant="secondary" disabled={creating}>Cancel</Button>} />
+          <DialogClose render={<Button variant="secondary" disabled={creating}>취소</Button>} />
           <Button variant="primary" onClick={() => void submit()} loading={creating}>
-            Create project
+            프로젝트 만들기
           </Button>
         </div>
       </DialogContent>

@@ -16,7 +16,7 @@ import {
 /* ───────────────────────── Theme ───────────────────────── */
 
 export type Theme = "dark" | "light";
-export const THEME_KEY = "opencut.theme";
+export const THEME_KEY = "aicccut.theme";
 
 function readTheme(): Theme {
   try {

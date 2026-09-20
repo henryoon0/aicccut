@@ -61,10 +61,10 @@ export function Field({ label, children, className }: { label: ReactNode; childr
 /** Small circular reset button used in card headers. */
 export function ResetButton({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
   return (
-    <Tooltip content="Reset to default" side="bottom">
+    <Tooltip content="초기화" side="bottom">
       <button
         type="button"
-        aria-label="Reset to default"
+        aria-label="초기화"
         disabled={disabled}
         onClick={(e) => {
           e.stopPropagation();
@@ -104,11 +104,11 @@ export function Diamond({ size = 9, color, hollow, className, style }: { size?: 
 /** Stopwatch toggle: on means the property is animated with keyframes. */
 export function Stopwatch({ on, onToggle, label }: { on: boolean; onToggle: () => void; label: string }) {
   return (
-    <Tooltip content={on ? `Stop animating ${label}` : `Animate ${label}`}>
+    <Tooltip content={on ? `${label} 애니메이션 끄기` : `${label} 애니메이션 켜기`}>
       <button
         type="button"
         aria-pressed={on}
-        aria-label={`Animate ${label}`}
+        aria-label={`${label} 애니메이션`}
         onClick={onToggle}
         className={cn(
           "flex size-5 shrink-0 items-center justify-center rounded-sm outline-none transition-colors hover:bg-hover focus-visible:ring-2 focus-visible:ring-foreground/50",

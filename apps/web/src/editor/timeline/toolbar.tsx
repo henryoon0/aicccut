@@ -24,19 +24,19 @@ export function Toolbar({ view }: { view: Viewport }) {
       <span className="text-[11px] text-muted-foreground">/ {timecode(total, fps)}</span>
 
       <div className="ml-auto flex items-center gap-1">
-        <Tooltip content={`Snapping ${snapping ? "on" : "off"} (N)`}>
-          <Button variant="ghost" size="icon-compact" active={snapping} onClick={actions.toggleSnapping} aria-label="Toggle snapping">
+        <Tooltip content={`스냅 ${snapping ? "켬" : "꺼짐"} (N)`}>
+          <Button variant="ghost" size="icon-compact" active={snapping} onClick={actions.toggleSnapping} aria-label="스냅 켜기/끄기">
             <HugeiconsIcon icon={Magnet01Icon} size={14} strokeWidth={1.5} />
           </Button>
         </Tooltip>
-        <Tooltip content={`Ripple editing ${ripple ? "on" : "off"} (R) — closes gaps when you trim or delete`}>
-          <Button variant="ghost" size="icon-compact" active={ripple} onClick={actions.toggleRipple} aria-label="Toggle ripple editing">
+        <Tooltip content={`리플 편집 ${ripple ? "켬" : "꺼짐"} (R) · 트림하거나 삭제하면 빈 자리를 메웁니다`}>
+          <Button variant="ghost" size="icon-compact" active={ripple} onClick={actions.toggleRipple} aria-label="리플 편집 켜기/끄기">
             <HugeiconsIcon icon={RippleIcon} size={14} strokeWidth={1.5} />
           </Button>
         </Tooltip>
         <div className="mx-1 h-4 w-px bg-border" />
-        <Tooltip content="Zoom out (-)">
-          <Button variant="ghost" size="icon-compact" onClick={() => view.zoomBy(0.8)} aria-label="Zoom out">
+        <Tooltip content="축소 (-)">
+          <Button variant="ghost" size="icon-compact" onClick={() => view.zoomBy(0.8)} aria-label="축소">
             <HugeiconsIcon icon={ArrowShrink01Icon} size={14} strokeWidth={1.5} />
           </Button>
         </Tooltip>
@@ -49,15 +49,15 @@ export function Toolbar({ view }: { view: Viewport }) {
             showValue={false}
             value={Math.log(view.pps)}
             onChange={(v) => actions.setZoomPps(Math.exp(v as number))}
-            aria-label="Zoom"
+            aria-label="확대/축소"
           />
         </div>
-        <Tooltip content="Zoom in (=)">
-          <Button variant="ghost" size="icon-compact" onClick={() => view.zoomBy(1.25)} aria-label="Zoom in">
+        <Tooltip content="확대 (=)">
+          <Button variant="ghost" size="icon-compact" onClick={() => view.zoomBy(1.25)} aria-label="확대">
             <HugeiconsIcon icon={ArrowExpand01Icon} size={14} strokeWidth={1.5} />
           </Button>
         </Tooltip>
-        <Tooltip content="Fit the whole project (⇧Z)">
+        <Tooltip content="타임라인 맞춤 (⇧Z)">
           <Button
             variant="ghost"
             size="compact"
@@ -67,7 +67,7 @@ export function Toolbar({ view }: { view: Viewport }) {
               if (el) el.scrollLeft = 0;
             }}
           >
-            Fit
+            맞춤
           </Button>
         </Tooltip>
       </div>

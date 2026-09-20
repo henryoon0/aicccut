@@ -195,7 +195,7 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                     className="absolute right-3 top-3"
                   >
                     <XIcon />
-                    <span className="sr-only">Close</span>
+                    <span className="sr-only">닫기</span>
                   </Button>
                 </DialogPrimitive.Close>
               )}

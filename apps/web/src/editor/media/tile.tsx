@@ -64,7 +64,7 @@ export function Tile(props: TileProps) {
               render={
                 <button
                   type="button"
-                  aria-label={`Actions for ${asset.name}`}
+                  aria-label={`${asset.name} 메뉴`}
                   onPointerDown={(e) => e.stopPropagation()}
                   onDoubleClick={(e) => e.stopPropagation()}
                   className={cn(
@@ -78,10 +78,10 @@ export function Tile(props: TileProps) {
               }
             />
             <DropdownContent align="end">
-              <MenuItem index={0} label="Add at playhead" onSelect={onOpen} />
-              <MenuItem index={1} label="Rename" onSelect={onStartRename} />
+              <MenuItem index={0} label="재생 헤드 위치에 추가" onSelect={onOpen} />
+              <MenuItem index={1} label="이름 바꾸기" onSelect={onStartRename} />
               <DropdownSeparator />
-              <MenuItem index={2} label="Remove (deletes its clips too)" onSelect={onRemove} />
+              <MenuItem index={2} label="삭제 (타임라인의 클립도 함께 삭제)" onSelect={onRemove} />
             </DropdownContent>
           </DropdownMenu>
         </div>
@@ -96,7 +96,7 @@ export function Tile(props: TileProps) {
           <div className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/85 to-black/0 px-2 pb-1.5 pt-5 text-white opacity-0 transition-[transform,opacity] duration-150 ease-out group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none">
             <div className="truncate text-[11px] font-medium">{asset.name}</div>
             <div className="text-[10px] text-white/70">
-              {asset.width ? resolution(asset) : "Audio"}
+              {asset.width ? resolution(asset) : "오디오"}
               {asset.fps ? ` · ${asset.fps}fps` : ""}
             </div>
           </div>
@@ -135,7 +135,7 @@ function RenameField({ name, onCommit, onCancel }: { name: string; onCommit: (v:
       <input
         ref={ref}
         value={value}
-        aria-label={`Rename ${name}`}
+        aria-label={`${name} 이름 바꾸기`}
         onChange={(e) => setValue(e.target.value)}
         onPointerDown={(e) => e.stopPropagation()}
         onKeyDown={(e) => {

@@ -151,7 +151,7 @@ export function KeyboardMap({
             const pinned = pinKey === k.id;
             const dim = filtering && !litKeys.has(k.id);
             const off = bound && runnable.length === 0;
-            const label = cmds.length === 1 ? KEY_LABELS[cmds[0].id] : `${cmds.length} cmds`;
+            const label = cmds.length === 1 ? KEY_LABELS[cmds[0].id] : `${cmds.length}개`;
             return (
               <button
                 key={`${k.id}-${i}`}
@@ -180,7 +180,7 @@ export function KeyboardMap({
               >
                 <span className={cn("truncate leading-none", bound && "-translate-y-1")}>{k.cap}</span>
                 {bound && (
-                  <span className="absolute bottom-1 max-w-full truncate px-0.5 text-[8px] uppercase tracking-wide opacity-70">
+                  <span className="absolute bottom-1 max-w-full truncate px-0.5 text-[9px] leading-none opacity-70">
                     {label}
                   </span>
                 )}

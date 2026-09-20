@@ -6,7 +6,7 @@
  * `CustomEvent` on `window` for every move and once more on release:
  *
  * ```ts
- * window.addEventListener("opencut:asset-drag", (e) => {
+ * window.addEventListener("aicccut:asset-drag", (e) => {
  *   const { assetId, phase, clientX, clientY } = (e as AssetDragEvent).detail;
  *   // phase: "start" → first move past the threshold
  *   //        "move"  → every subsequent move
@@ -23,7 +23,7 @@ import { spring } from "#/lib/springs";
 import { shortDuration, type Asset } from "#/editor/core";
 import { Thumb } from "./thumb";
 
-export const ASSET_DRAG_EVENT = "opencut:asset-drag";
+export const ASSET_DRAG_EVENT = "aicccut:asset-drag";
 
 export type AssetDragPhase = "start" | "move" | "end";
 

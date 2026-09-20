@@ -37,8 +37,8 @@ export function Inspector() {
     return (
       <div className="flex h-full w-full min-h-0 flex-col items-center justify-center gap-2 bg-surface-2 p-6 text-center">
         <MousePointerSquareDashed size={20} strokeWidth={1.5} className="text-muted-foreground" />
-        <p className="text-[13px] font-medium">Select a clip</p>
-        <p className="max-w-[220px] text-[12px] text-muted-foreground">Its transform, effects and text settings appear here.</p>
+        <p className="text-[13px] font-medium">클립을 선택하세요</p>
+        <p className="max-w-[220px] text-[12px] text-muted-foreground">변형·효과·글자 설정이 여기에 나타납니다.</p>
       </div>
     );
   }
@@ -78,14 +78,14 @@ function ClipInspector({ clip, trackName, extraSelected }: { clip: Clip; trackNa
           <p className="truncate text-[13px] font-medium">{clip.label}</p>
           <p className="truncate text-[11px] text-muted-foreground">
             {trackName}
-            {extraSelected > 0 && ` · +${extraSelected} more selected`}
+            {extraSelected > 0 && ` · 외 ${extraSelected}개 선택됨`}
           </p>
         </div>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
         <Card
-          title="Transform"
+          title="변형"
           resetDisabled={transformIsDefault}
           onReset={() => {
             clearChannels(TRANSFORM_KEYS);
@@ -101,7 +101,7 @@ function ClipInspector({ clip, trackName, extraSelected }: { clip: Clip; trackNa
         </Card>
 
         <Card
-          title="Blending"
+          title="합성"
           resetDisabled={blendIsDefault}
           onReset={() => {
             clearChannels(["opacity"]);
@@ -109,9 +109,9 @@ function ClipInspector({ clip, trackName, extraSelected }: { clip: Clip; trackNa
           }}
         >
           <ChannelSlider api={api} ch="opacity" min={0} max={100} step={1} suffix="%" />
-          <Field label="Blend mode">
+          <Field label="혼합 모드">
             <Select value={p.blend} onValueChange={(v) => actions.updateClipProps(clip.id, { blend: v as BlendMode })}>
-              <SelectTrigger aria-label="Blend mode" className="w-full" />
+              <SelectTrigger aria-label="혼합 모드" className="w-full" />
               <SelectContent>
                 {BLEND_MODES.map((m, i) => (
                   <SelectItem key={m} index={i} value={m}>
@@ -125,18 +125,18 @@ function ClipInspector({ clip, trackName, extraSelected }: { clip: Clip; trackNa
 
         {textApi && (
           <Card
-            title="Typography"
+            title="글자"
             resetDisabled={isDefaultTextStyle(textApi.text)}
             onReset={() => actions.setClipText(clip.id, { ...DEFAULT_TEXT_STYLE })}
           >
-            <Field label="Font">
+            <Field label="글꼴">
               <FontField api={textApi} />
             </Field>
             <TextMetrics api={textApi} />
-            <Field label="Alignment">
+            <Field label="정렬">
               <AlignRow api={textApi} />
             </Field>
-            <Field label="Colour">
+            <Field label="색상">
               <ColorRow api={textApi} />
             </Field>
           </Card>
@@ -144,13 +144,13 @@ function ClipInspector({ clip, trackName, extraSelected }: { clip: Clip; trackNa
 
         <EffectsCard clip={clip} api={api} />
 
-        <Card title="Clip">
+        <Card title="클립 정보">
           <div className="flex flex-col gap-2 text-[12px]">
-            <ReadOnly label="Start" value={timecode(clip.start, fps)} />
-            <ReadOnly label="Duration" value={timecode(clip.duration, fps)} />
-            <ReadOnly label="In point" value={timecode(clip.inPoint, fps)} />
+            <ReadOnly label="시작" value={timecode(clip.start, fps)} />
+            <ReadOnly label="길이" value={timecode(clip.duration, fps)} />
+            <ReadOnly label="시작점" value={timecode(clip.inPoint, fps)} />
           </div>
-          <Switch label="Mute" checked={clip.muted === true} onToggle={() => actions.toggleClipsMuted([clip.id])} />
+          <Switch label="음소거" checked={clip.muted === true} onToggle={() => actions.toggleClipsMuted([clip.id])} />
         </Card>
       </div>
     </div>

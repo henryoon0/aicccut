@@ -12,7 +12,7 @@ import { fileSize } from "#/editor/core";
 import type { PendingImport } from "./import";
 import { KIND_LABEL } from "./helpers";
 
-const FORMATS = "MP4, MOV, WAV, MP3, PNG, JPG · up to 4K";
+const FORMATS = "지원 형식: MP4, MOV, WAV, MP3, PNG, JPG · 최대 4K";
 
 interface DropzoneProps {
   /** True while files hover this target. */
@@ -31,7 +31,7 @@ export function Dropzone({ over, onBrowse, bind }: DropzoneProps) {
         role="button"
         tabIndex={0}
         data-testid="media-dropzone"
-        aria-label="Import media: drop files or press Enter to browse"
+        aria-label="미디어 가져오기: 파일을 끌어다 놓거나 Enter로 선택"
         onClick={onBrowse}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -53,11 +53,11 @@ export function Dropzone({ over, onBrowse, bind }: DropzoneProps) {
           <CloudUpload size={24} strokeWidth={1.5} />
         </motion.div>
         <div className="space-y-1">
-          <p className="text-[13px] font-medium">{over ? "Release to import" : "Drop files or click to browse"}</p>
+          <p className="text-[13px] font-medium">{over ? "놓으면 가져옵니다" : "파일을 끌어다 놓거나 클릭해서 선택하세요"}</p>
           <p className="text-[11.5px] text-muted-foreground">{FORMATS}</p>
         </div>
         <p className="text-[11px] text-muted-foreground">
-          or paste with <Kbd className="align-middle">⌘V</Kbd>
+          또는 <Kbd className="align-middle">⌘V</Kbd>로 붙여넣기
         </p>
       </div>
     </div>
@@ -84,8 +84,8 @@ export function WindowDropOverlay({ show }: { show: boolean }) {
             className="absolute inset-4 flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-foreground/50"
           >
             <CloudUpload size={40} strokeWidth={1.25} />
-            <p className="text-[15px] font-medium">Drop to import into “Media”</p>
-            <p className="text-[12px] text-muted-foreground">Video, audio and images · you can keep editing meanwhile</p>
+            <p className="text-[15px] font-medium">놓으면 “미디어”에 가져옵니다</p>
+            <p className="text-[12px] text-muted-foreground">영상·오디오·이미지 · 가져오는 동안 계속 편집할 수 있습니다</p>
           </motion.div>
         </motion.div>
       )}
@@ -115,7 +115,7 @@ export function PendingTile({ item }: { item: PendingImport }) {
         <div className="absolute inset-x-3 bottom-3">
           <div
             role="progressbar"
-            aria-label={`Importing ${item.name}`}
+            aria-label={`${item.name} 가져오는 중`}
             aria-valuenow={pct}
             aria-valuemin={0}
             aria-valuemax={100}
@@ -150,13 +150,13 @@ export function DoneToast({ count, onDismiss }: { count: number | null; onDismis
           className="absolute inset-x-3 bottom-11 z-10 flex items-center gap-2 rounded-md bg-surface-4 px-3 py-1.5 text-[12px] shadow-surface-4"
         >
           <Check size={14} strokeWidth={2} />
-          {count} file{count > 1 ? "s" : ""} imported
+          파일 {count}개를 가져왔습니다
           <button
             type="button"
             onClick={onDismiss}
             className="ml-auto cursor-pointer rounded px-1 text-muted-foreground outline-none hover:bg-hover hover:text-foreground focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
           >
-            Dismiss
+            닫기
           </button>
         </motion.div>
       )}

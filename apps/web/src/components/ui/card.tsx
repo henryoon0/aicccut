@@ -481,7 +481,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
             <button
               type="button"
               onClick={onDismiss}
-              aria-label="Dismiss"
+              aria-label="닫기"
               className={cn(
                 "absolute right-2 top-2 z-30 flex h-7 w-7 items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer outline-none transition-colors duration-80 focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
                 // Over media the control needs its own ground, or the icon

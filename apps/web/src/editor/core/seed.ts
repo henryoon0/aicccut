@@ -40,12 +40,12 @@ export function defaultClipProps(): ClipProps {
 /** Tracks every new project starts with (top to bottom). */
 export function defaultTracks(): Track[] {
   return [
-    { id: "t-text", name: "Text", kind: "text", muted: false, locked: false, hidden: false },
-    { id: "t-fx", name: "Effects", kind: "effect", muted: false, locked: false, hidden: false },
-    { id: "t-v2", name: "Video 2", kind: "video", muted: false, locked: false, hidden: false },
-    { id: "t-v1", name: "Video 1", kind: "video", muted: false, locked: false, hidden: false },
-    { id: "t-a1", name: "Voice", kind: "audio", muted: false, locked: false, hidden: false },
-    { id: "t-a2", name: "Music", kind: "audio", muted: false, locked: false, hidden: false },
+    { id: "t-text", name: "텍스트", kind: "text", muted: false, locked: false, hidden: false },
+    { id: "t-fx", name: "효과", kind: "effect", muted: false, locked: false, hidden: false },
+    { id: "t-v2", name: "비디오 2", kind: "video", muted: false, locked: false, hidden: false },
+    { id: "t-v1", name: "비디오 1", kind: "video", muted: false, locked: false, hidden: false },
+    { id: "t-a1", name: "음성", kind: "audio", muted: false, locked: false, hidden: false },
+    { id: "t-a2", name: "음악", kind: "audio", muted: false, locked: false, hidden: false },
   ];
 }
 
@@ -106,7 +106,7 @@ export const CLIPS: Clip[] = [
   { id: "c10", trackId: "t-text", label: "훅(Hook)이란 무엇인가", start: 2.0, duration: 6.0, inPoint: 0, tint: "#ffd166", props: text("훅(Hook)이란 무엇인가") },
   { id: "c11", trackId: "t-text", label: "PreToolUse · PostToolUse", start: 22.0, duration: 8.0, inPoint: 0, tint: "#ffd166", props: text("PreToolUse · PostToolUse") },
   {
-    id: "c12", trackId: "t-fx", label: "Blur 12px", start: 12.4, duration: 3.0, inPoint: 0, tint: "#94a3b8",
+    id: "c12", trackId: "t-fx", label: "블러 12px", start: 12.4, duration: 3.0, inPoint: 0, tint: "#94a3b8",
     props: { ...P(), effects: [{ id: "e1", type: "blur", enabled: true, params: { amount: 12 } }] },
   },
 ];
@@ -129,38 +129,38 @@ export const TEXT_SWATCHES = ["#FFFFFF", "#0A0A0A", "#FFD166", "#5B6CFF", "#FF6B
 
 /** Effect catalogue for browsers/menus. `chroma` and `lut` are listed but not yet applicable. */
 export const EFFECTS = [
-  { id: "blur", name: "Blur", description: "Gaussian blur, 0–64px" },
-  { id: "brightness", name: "Brightness", description: "-100 to +100" },
-  { id: "contrast", name: "Contrast", description: "0–200%" },
-  { id: "saturation", name: "Saturation", description: "0–200%" },
-  { id: "vignette", name: "Vignette", description: "Edge darkening" },
-  { id: "chroma", name: "Chroma Key", description: "Remove a colour" },
-  { id: "lut", name: "LUT", description: "Apply a .cube lookup" },
-  { id: "sharpen", name: "Sharpen", description: "0–100" },
+  { id: "blur", name: "블러", description: "가우시안 블러, 0~64px" },
+  { id: "brightness", name: "밝기", description: "-100 ~ +100" },
+  { id: "contrast", name: "대비", description: "0~200%" },
+  { id: "saturation", name: "채도", description: "0~200%" },
+  { id: "vignette", name: "비네트", description: "가장자리 어둡게" },
+  { id: "chroma", name: "크로마 키", description: "특정 색 제거" },
+  { id: "lut", name: "LUT", description: ".cube 파일로 색 보정" },
+  { id: "sharpen", name: "선명도", description: "0~100" },
 ] as const;
 
 /** Mock command table kept for reference; the live registry is commands.ts. */
 export const COMMANDS = [
-  { id: "split", label: "Split clip at playhead", shortcut: "S", group: "Edit" },
-  { id: "delete", label: "Delete selection", shortcut: "Backspace", group: "Edit" },
-  { id: "ripple", label: "Toggle ripple editing", shortcut: "R", group: "Edit" },
-  { id: "undo", label: "Undo", shortcut: "Mod+Z", group: "Edit" },
-  { id: "redo", label: "Redo", shortcut: "Mod+Shift+Z", group: "Edit" },
-  { id: "play", label: "Play / Pause", shortcut: "Space", group: "Playback" },
-  { id: "prev-frame", label: "Previous frame", shortcut: "ArrowLeft", group: "Playback" },
-  { id: "next-frame", label: "Next frame", shortcut: "ArrowRight", group: "Playback" },
-  { id: "goto-start", label: "Go to start", shortcut: "Home", group: "Playback" },
-  { id: "add-text", label: "Add text", shortcut: "T", group: "Insert" },
-  { id: "add-effect", label: "Add effect…", shortcut: "E", group: "Insert" },
-  { id: "import", label: "Import media…", shortcut: "Mod+I", group: "File" },
-  { id: "export", label: "Export…", shortcut: "Mod+E", group: "File" },
-  { id: "new", label: "New project", shortcut: "Mod+N", group: "File" },
-  { id: "zoom-in", label: "Zoom timeline in", shortcut: "=", group: "View" },
-  { id: "zoom-out", label: "Zoom timeline out", shortcut: "-", group: "View" },
-  { id: "fit", label: "Fit timeline to window", shortcut: "Shift+Z", group: "View" },
-  { id: "toggle-snap", label: "Toggle snapping", shortcut: "N", group: "View" },
-  { id: "safe-areas", label: "Toggle safe areas", shortcut: "Mod+'", group: "View" },
-  { id: "bookmark", label: "Add bookmark", shortcut: "B", group: "Insert" },
+  { id: "split", label: "재생 헤드에서 클립 분할", shortcut: "S", group: "Edit" },
+  { id: "delete", label: "선택한 클립 삭제", shortcut: "Backspace", group: "Edit" },
+  { id: "ripple", label: "리플 편집 켜기/끄기", shortcut: "R", group: "Edit" },
+  { id: "undo", label: "실행 취소", shortcut: "Mod+Z", group: "Edit" },
+  { id: "redo", label: "다시 실행", shortcut: "Mod+Shift+Z", group: "Edit" },
+  { id: "play", label: "재생 / 일시정지", shortcut: "Space", group: "Playback" },
+  { id: "prev-frame", label: "이전 프레임", shortcut: "ArrowLeft", group: "Playback" },
+  { id: "next-frame", label: "다음 프레임", shortcut: "ArrowRight", group: "Playback" },
+  { id: "goto-start", label: "처음으로", shortcut: "Home", group: "Playback" },
+  { id: "add-text", label: "텍스트 추가", shortcut: "T", group: "Insert" },
+  { id: "add-effect", label: "효과 추가…", shortcut: "E", group: "Insert" },
+  { id: "import", label: "미디어 가져오기…", shortcut: "Mod+I", group: "File" },
+  { id: "export", label: "내보내기…", shortcut: "Mod+E", group: "File" },
+  { id: "new", label: "새 프로젝트", shortcut: "Mod+N", group: "File" },
+  { id: "zoom-in", label: "타임라인 확대", shortcut: "=", group: "View" },
+  { id: "zoom-out", label: "타임라인 축소", shortcut: "-", group: "View" },
+  { id: "fit", label: "타임라인 맞춤", shortcut: "Shift+Z", group: "View" },
+  { id: "toggle-snap", label: "스냅 켜기/끄기", shortcut: "N", group: "View" },
+  { id: "safe-areas", label: "안전 영역 표시/숨기기", shortcut: "Mod+'", group: "View" },
+  { id: "bookmark", label: "북마크 추가", shortcut: "B", group: "Insert" },
 ] as const;
 
 /** 00:01:23.04 style timecode. */
@@ -174,14 +174,14 @@ export function timecode(seconds: number, fps = 30): string {
   return `${pad(h)}:${pad(m)}:${pad(sec)}.${pad(f)}`;
 }
 
-/** 1m 24s style short duration. */
+/** "1분 24초" style short duration (Korean units, no space before the unit). */
 export function shortDuration(seconds: number): string {
-  if (seconds < 60) return `${seconds.toFixed(seconds < 10 ? 1 : 0)}s`;
+  if (seconds < 60) return `${seconds.toFixed(seconds < 10 ? 1 : 0)}초`;
   const m = Math.floor(seconds / 60);
   const s = Math.round(seconds % 60);
-  if (m < 60) return `${m}m ${String(s).padStart(2, "0")}s`;
+  if (m < 60) return `${m}분 ${s}초`;
   const h = Math.floor(m / 60);
-  return `${h}h ${String(m % 60).padStart(2, "0")}m`;
+  return `${h}시간 ${m % 60}분`;
 }
 
 /** "1.3 MB" style file size. */

@@ -23,6 +23,17 @@ import { cn } from "#/lib/utils";
 import { NumberField } from "./number-field";
 import { Diamond, ScrubRegion, Stopwatch } from "./shared";
 
+/** Korean names for the animatable channels, keyed by channel id so the core's
+ * `CHANNELS` labels stay untouched. */
+export const CHANNEL_LABEL: Record<Channel, string> = {
+  x: "위치 X",
+  y: "위치 Y",
+  scale: "크기",
+  rotation: "회전",
+  opacity: "불투명도",
+  blur: "블러",
+};
+
 export interface ChannelApi {
   /** Values at the playhead: keyframed channels interpolated, the rest static. */
   values: ChannelValues;
@@ -90,7 +101,7 @@ function NavButton({ label, onClick, children }: { label: string; onClick: () =>
  * `label` shortens the visible text; accessible names keep the channel's name.
  */
 export function ChannelHead({ api, ch, label, trailing }: { api: ChannelApi; ch: Channel; label?: string; trailing?: React.ReactNode }) {
-  const name = CHANNELS[ch].label;
+  const name = CHANNEL_LABEL[ch];
   const shown = label ?? name;
   const on = api.animated(ch);
   const here = api.keyframeHere(ch);
@@ -99,13 +110,13 @@ export function ChannelHead({ api, ch, label, trailing }: { api: ChannelApi; ch:
       <Stopwatch on={on} label={name} onToggle={() => api.toggle(ch)} />
       <span className={cn("min-w-0 flex-1 truncate text-[12px]", on ? "text-foreground" : "text-muted-foreground")}>{shown}</span>
       <div className={cn("flex shrink-0 items-center transition-opacity", on ? "opacity-100" : "pointer-events-none opacity-0")}>
-        <NavButton label={`Previous ${name} keyframe`} onClick={() => api.jump(ch, -1)}>
+        <NavButton label={`${name} 이전 키프레임`} onClick={() => api.jump(ch, -1)}>
           <ChevronLeft size={12} />
         </NavButton>
-        <NavButton label={here ? `Remove ${name} keyframe` : `Add ${name} keyframe`} onClick={() => api.toggleKeyframe(ch)}>
+        <NavButton label={here ? `${name} 키프레임 삭제` : `${name} 키프레임 추가`} onClick={() => api.toggleKeyframe(ch)}>
           <Diamond size={8} color={CHANNELS[ch].color} hollow={!here} />
         </NavButton>
-        <NavButton label={`Next ${name} keyframe`} onClick={() => api.jump(ch, 1)}>
+        <NavButton label={`${name} 다음 키프레임`} onClick={() => api.jump(ch, 1)}>
           <ChevronRight size={12} />
         </NavButton>
       </div>
@@ -134,7 +145,7 @@ export function ChannelSlider({
   suffix?: string;
   label?: string;
 }) {
-  const name = CHANNELS[ch].label;
+  const name = CHANNEL_LABEL[ch];
   const value = api.values[ch];
   return (
     <div className="flex flex-col gap-1.5">
@@ -177,7 +188,7 @@ export function ChannelSlider({
 
 /** Head row plus a boxed scrubbable number, for unbounded channels (X / Y). */
 export function ChannelNumber({ api, ch, min, max, step = 1, suffix }: { api: ChannelApi; ch: Channel; min: number; max: number; step?: number; suffix?: string }) {
-  const name = CHANNELS[ch].label;
+  const name = CHANNEL_LABEL[ch];
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
       <ChannelHead api={api} ch={ch} label={ch.toUpperCase()} />

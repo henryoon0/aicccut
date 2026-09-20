@@ -48,9 +48,9 @@ function ParamSlider({ clipId, effect }: { clipId: string; effect: EffectInstanc
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center gap-1">
-        <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground">Amount</span>
+        <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground">강도</span>
         <NumberField
-          label={`${meta.label} amount`}
+          label={`${meta.label} 강도`}
           value={value}
           min={meta.min}
           max={meta.max}
@@ -67,7 +67,7 @@ function ParamSlider({ clipId, effect }: { clipId: string; effect: EffectInstanc
       </div>
       <ScrubRegion>
         <Slider
-          aria-label={`${meta.label} amount`}
+          aria-label={`${meta.label} 강도`}
           value={value}
           min={meta.min}
           max={meta.max}
@@ -84,11 +84,11 @@ export function EffectsCard({ clip, api }: { clip: Clip; api: ChannelApi }) {
   const actions = useActions();
   const effects = clip.props.effects;
   // Only the catalogue entries the document model can actually hold.
-  const catalogue = EFFECTS.flatMap((fx) => (isEffectType(fx.id) ? [{ type: fx.id, name: fx.name }] : []));
+  const catalogue = EFFECTS.flatMap((fx) => (isEffectType(fx.id) ? [{ type: fx.id, name: EFFECT_META[fx.id].label }] : []));
 
   return (
     <Card
-      title="Effects"
+      title="효과"
       onReset={() => {
         for (const e of effects) actions.removeEffect(clip.id, e.id);
       }}
@@ -98,7 +98,7 @@ export function EffectsCard({ clip, api }: { clip: Clip; api: ChannelApi }) {
           <DropdownTrigger
             render={
               <Button variant="ghost" size="compact" leadingIcon={Plus}>
-                Add effect
+                효과 추가
               </Button>
             }
           />
@@ -110,7 +110,7 @@ export function EffectsCard({ clip, api }: { clip: Clip; api: ChannelApi }) {
         </DropdownMenu>
       }
     >
-      {effects.length === 0 && <p className="text-[12px] text-muted-foreground">No effects on this clip.</p>}
+      {effects.length === 0 && <p className="text-[12px] text-muted-foreground">이 클립에는 효과가 없습니다.</p>}
 
       {effects.map((effect, i) => {
         const meta = EFFECT_META[effect.type];
@@ -120,19 +120,19 @@ export function EffectsCard({ clip, api }: { clip: Clip; api: ChannelApi }) {
               <div className="min-w-0 flex-1">
                 <Switch size="compact" label={meta.label} checked={effect.enabled} onToggle={() => actions.toggleEffect(clip.id, effect.id)} />
               </div>
-              <IconButton label={`Move ${meta.label} up`} disabled={i === 0} onClick={() => actions.reorderEffects(clip.id, i, i - 1)}>
+              <IconButton label={`${meta.label} 위로`} disabled={i === 0} onClick={() => actions.reorderEffects(clip.id, i, i - 1)}>
                 <ArrowUp size={12} strokeWidth={1.75} />
               </IconButton>
-              <IconButton label={`Move ${meta.label} down`} disabled={i === effects.length - 1} onClick={() => actions.reorderEffects(clip.id, i, i + 1)}>
+              <IconButton label={`${meta.label} 아래로`} disabled={i === effects.length - 1} onClick={() => actions.reorderEffects(clip.id, i, i + 1)}>
                 <ArrowDown size={12} strokeWidth={1.75} />
               </IconButton>
-              <IconButton label={`Remove ${meta.label}`} danger onClick={() => actions.removeEffect(clip.id, effect.id)}>
+              <IconButton label={`${meta.label} 삭제`} danger onClick={() => actions.removeEffect(clip.id, effect.id)}>
                 <Trash2 size={12} strokeWidth={1.75} />
               </IconButton>
             </header>
             <div className={cn("transition-opacity duration-150", !effect.enabled && "pointer-events-none opacity-40")}>
               {effect.type === "blur" ? (
-                <ChannelSlider api={api} ch="blur" label="Amount" min={meta.min} max={meta.max} step={meta.step} precision={meta.precision} suffix={meta.suffix} />
+                <ChannelSlider api={api} ch="blur" label="강도" min={meta.min} max={meta.max} step={meta.step} precision={meta.precision} suffix={meta.suffix} />
               ) : (
                 <ParamSlider clipId={clip.id} effect={effect} />
               )}

@@ -186,7 +186,7 @@ export function useDocumentRender() {
 }
 
 export function etaLabel(seconds: number): string {
-  if (seconds < 1) return "a moment";
-  if (seconds < 60) return `${Math.ceil(seconds)}s left`;
-  return `${Math.floor(seconds / 60)}m ${String(Math.ceil(seconds % 60)).padStart(2, "0")}s left`;
+  if (seconds < 1) return "곧 완료";
+  if (seconds < 60) return `${Math.ceil(seconds)}초 남음`;
+  return `${Math.floor(seconds / 60)}분 ${String(Math.ceil(seconds % 60)).padStart(2, "0")}초 남음`;
 }

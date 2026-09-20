@@ -21,7 +21,7 @@ import {
 import { Elevated } from "#/lib/elevated";
 import { spring } from "#/lib/springs";
 import { cn } from "#/lib/utils";
-import { COMMAND_HINTS } from "./data";
+import { COMMAND_HINTS, groupLabel } from "./data";
 import { COMMANDS_BY_KEY, KeyboardMap, Keys, modifierKeys, physicalKey } from "./keyboard";
 import { isEnabled, useRunCommand } from "./run";
 
@@ -33,7 +33,7 @@ export function ShortcutsSheet() {
 
 function matchesQuery(cmd: Command, q: string): boolean {
   if (q === "") return true;
-  const haystack = [cmd.label, cmd.group, COMMAND_HINTS[cmd.id] ?? "", cmd.shortcut ?? "", ...(cmd.keywords ?? [])]
+  const haystack = [cmd.label, cmd.group, groupLabel(cmd.group), COMMAND_HINTS[cmd.id] ?? "", cmd.shortcut ?? "", ...(cmd.keywords ?? [])]
     .join(" ")
     .toLowerCase();
   return haystack.includes(q);
@@ -130,7 +130,7 @@ function SheetSurface() {
         key="sheet"
         role="dialog"
         aria-modal="true"
-        aria-label="Keyboard shortcuts"
+        aria-label="단축키"
         className="fixed inset-0 z-50 grid place-items-center p-5"
         initial={{ opacity: 0, scale: 0.985, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -143,8 +143,8 @@ function SheetSurface() {
         >
           <header className="flex h-12 shrink-0 items-center gap-3 border-b border-border/60 px-4">
             <Keyboard size={16} strokeWidth={1.5} className="text-muted-foreground" />
-            <span className="text-[13px] font-medium">Keyboard shortcuts</span>
-            <span className="text-[11px] text-muted-foreground">{COMMAND_LIST.length} commands</span>
+            <span className="text-[13px] font-medium">단축키</span>
+            <span className="text-[11px] text-muted-foreground">명령 {COMMAND_LIST.length}개</span>
             <label className="ml-3 flex h-8 w-72 items-center gap-2 rounded-md bg-surface-2 px-2.5 ring-1 ring-border/60 focus-within:ring-foreground/30">
               <Search size={13} strokeWidth={1.75} className="shrink-0 text-muted-foreground" />
               <input
@@ -165,17 +165,17 @@ function SheetSurface() {
                     setQuery("");
                   }
                 }}
-                placeholder="Filter by name, area or key…"
+                placeholder="이름·영역·키로 찾기…"
                 spellCheck={false}
-                aria-label="Filter shortcuts"
+                aria-label="단축키 찾기"
                 className="min-w-0 flex-1 bg-transparent text-[12px] outline-none placeholder:text-muted-foreground"
               />
               {query !== "" && <span className="text-[10px] tabular-nums text-muted-foreground">{matches.length}</span>}
             </label>
             <span className="ml-auto flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              Run a command by name <Keys shortcut="Mod+K" mac={mac} />
+              명령 이름으로 실행 <Keys shortcut="Mod+K" mac={mac} />
             </span>
-            <Button variant="ghost" size="icon-compact" aria-label="Close" onClick={close}>
+            <Button variant="ghost" size="icon-compact" aria-label="닫기" onClick={close}>
               <X />
             </Button>
           </header>
@@ -197,15 +197,15 @@ function SheetSurface() {
                 {hoverKey && hoverCmds.length > 0 ? (
                   <>
                     <span className="text-foreground">{hoverCmds.map((c) => c.label).join(" · ")}</span>
-                    {hoverCmds.length > 1 ? " — click the key to list them" : " — click the key to run it"}
+                    {hoverCmds.length > 1 ? " · 키를 클릭하면 목록이 나옵니다" : " · 키를 클릭하면 실행됩니다"}
                   </>
                 ) : pinKey ? (
                   <>
-                    Showing commands on <span className="text-foreground">{pinKey.toUpperCase()}</span>. Press Esc to
-                    clear.
+                    <span className="text-foreground">{pinKey.toUpperCase()}</span> 키의 명령만 보고 있습니다. Esc를
+                    누르면 해제됩니다.
                   </>
                 ) : (
-                  "Labelled keys are bound. Hover a key to see its command; type above to light the keys you need."
+                  "글자가 있는 키에 명령이 있습니다. 키에 마우스를 올리면 명령이 보이고, 위에서 검색하면 해당 키가 켜집니다."
                 )}
               </p>
             </section>
@@ -213,7 +213,7 @@ function SheetSurface() {
             <section className="min-h-0 overflow-y-auto px-2 py-2">
               {commandsByGroup(matches).map(({ group, commands }) => (
                 <div key={group} className="mb-2">
-                  <div className="flex h-7 items-center px-2 text-[11px] font-medium text-muted-foreground">{group}</div>
+                  <div className="flex h-7 items-center px-2 text-[11px] font-medium text-muted-foreground">{groupLabel(group)}</div>
                   {commands.map((c) => {
                     const off = disabledIds.has(c.id);
                     return (
@@ -242,7 +242,7 @@ function SheetSurface() {
                 </div>
               ))}
               {matches.length === 0 && (
-                <div className="px-2 py-8 text-center text-[12px] text-muted-foreground">No shortcut matches.</div>
+                <div className="px-2 py-8 text-center text-[12px] text-muted-foreground">일치하는 단축키가 없습니다.</div>
               )}
             </section>
           </div>

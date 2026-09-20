@@ -42,10 +42,10 @@ function BookmarkFlag({ bookmark, pps }: { bookmark: Bookmark; pps: number }) {
   const { time } = useEditorContext();
   const fps = useEditor((s) => s.doc.project.fps);
   return (
-    <Tooltip content={`${bookmark.label || "Bookmark"} · ${timecode(bookmark.time, fps)} · right-click to remove`} side="top">
+    <Tooltip content={`${bookmark.label || "북마크"} · ${timecode(bookmark.time, fps)} · 우클릭으로 삭제`} side="top">
       <button
         type="button"
-        aria-label={`Bookmark at ${timecode(bookmark.time, fps)}`}
+        aria-label={`북마크 ${timecode(bookmark.time, fps)}`}
         className="absolute top-0 z-10 h-3 w-2.5 cursor-pointer rounded-[1px] rounded-bl-none outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
         style={{ left: bookmark.time * pps, background: bookmark.color, clipPath: "polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%)" }}
         onPointerDown={(e) => e.stopPropagation()}

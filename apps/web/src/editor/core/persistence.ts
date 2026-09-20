@@ -3,7 +3,7 @@
  * so tests (and SSR) can pass a fake; without one, `globalThis.localStorage`
  * is used when present and every call becomes a no-op otherwise.
  *
- * Keys: `opencut.projects` (Project[]), `opencut.doc.<projectId>` (Document).
+ * Keys: `aicccut.projects` (Project[]), `aicccut.doc.<projectId>` (Document).
  */
 import { useEffect } from "react";
 import { documentDuration } from "./document";
@@ -18,8 +18,8 @@ export interface StorageLike {
   removeItem(key: string): void;
 }
 
-export const PROJECTS_KEY = "opencut.projects";
-export const docKey = (projectId: string) => `opencut.doc.${projectId}`;
+export const PROJECTS_KEY = "aicccut.projects";
+export const docKey = (projectId: string) => `aicccut.doc.${projectId}`;
 
 /** localStorage when available (browser), else null. */
 export function defaultStorage(): StorageLike | null {
@@ -80,7 +80,7 @@ export function newDocument(input: CreateProjectInput): Document {
   const size = ASPECT_SIZES[aspect];
   const now = new Date().toISOString();
   const project: Project = {
-    id: newId("p"), name: input.name.trim() || "Untitled", aspect, fps: input.fps ?? DEFAULT_FPS,
+    id: newId("p"), name: input.name.trim() || "제목 없는 프로젝트", aspect, fps: input.fps ?? DEFAULT_FPS,
     width: input.width ?? size.width, height: input.height ?? size.height,
     createdAt: now, updatedAt: now, tint: input.tint ?? TINTS[Math.floor(Math.random() * TINTS.length)],
   };
@@ -113,7 +113,7 @@ export function duplicateProject(projectId: string, storage = defaultStorage()):
   const doc = readJson<Document>(storage, docKey(projectId));
   if (!doc) return null;
   const now = new Date().toISOString();
-  const copy: Document = { ...doc, project: { ...doc.project, id: newId("p"), name: `${doc.project.name} copy`, createdAt: now, updatedAt: now } };
+  const copy: Document = { ...doc, project: { ...doc.project, id: newId("p"), name: `${doc.project.name} 사본`, createdAt: now, updatedAt: now } };
   writeJson(storage, docKey(copy.project.id), copy);
   writeProjects(storage, [copy.project, ...(readJson<Project[]>(storage, PROJECTS_KEY) ?? [])]);
   return copy;

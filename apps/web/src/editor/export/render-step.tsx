@@ -7,7 +7,7 @@ import { dimensions, estimateBytes, formatDef, fpsValue, projectFileName, type D
 import { etaLabel, type RenderState } from "./render";
 import { FramePreview } from "./frame";
 
-const NOTE = "Video encoding is not wired up yet in this build; this exports the project file.";
+const NOTE = "이 버전에는 영상 인코더가 아직 없어서 프로젝트 파일을 내보냅니다.";
 
 export interface RenderStepProps {
   settings: ExportSettings;
@@ -66,35 +66,35 @@ export function RenderStep({ settings: s, ctx, destination, name, state, onCance
             <div>
               <div className="text-[15px] font-semibold">{fileName}</div>
               <div className="mt-0.5 text-[12px] text-muted-foreground">
-                Walked {state.totalFrames.toLocaleString()} frames ·{" "}
-                {audioOnly ? formatDef(s.format).label : `${out.width}×${out.height} · ${fpsValue(s, ctx)} fps`} · ~{fileSize(estimateBytes(s, ctx))} encoded
+                프레임 {state.totalFrames.toLocaleString()}개 처리 ·{" "}
+                {audioOnly ? formatDef(s.format).label : `${out.width}×${out.height} · ${fpsValue(s, ctx)}fps`} · 약 {fileSize(estimateBytes(s, ctx))}
               </div>
             </div>
             <div className="flex flex-wrap justify-center gap-2">
               {destination === "download" && (
-                <Button leadingIcon={Download} onClick={onDownload}>Download project file</Button>
+                <Button leadingIcon={Download} onClick={onDownload}>프로젝트 파일 다운로드</Button>
               )}
               {destination === "link" && (
                 <Button leadingIcon={copied ? Check : Copy} onClick={() => void copyLink()}>
-                  {copied ? "Link copied" : "Copy link"}
+                  {copied ? "링크를 복사했습니다" : "링크 복사"}
                 </Button>
               )}
               {destination === "drive" && (
-                <Tooltip content="Coming soon">
-                  <span className="inline-flex"><Button leadingIcon={FolderOpen} disabled>Open in Drive</Button></span>
+                <Tooltip content="준비 중">
+                  <span className="inline-flex"><Button leadingIcon={FolderOpen} disabled>드라이브에서 열기</Button></span>
                 </Tooltip>
               )}
-              <Button variant="ghost" onClick={onAgain}>Export again</Button>
+              <Button variant="ghost" onClick={onAgain}>다시 내보내기</Button>
             </div>
           </div>
         ) : state.status === "cancelled" ? (
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="text-[13px] text-muted-foreground">
-              Export cancelled at {Math.round(state.progress * 100)}%.
+              {Math.round(state.progress * 100)}%에서 내보내기를 취소했습니다.
             </div>
             <div className="flex gap-2">
-              <Button leadingIcon={Upload} onClick={onRetry}>Try again</Button>
-              <Button variant="ghost" onClick={onBack}>Back</Button>
+              <Button leadingIcon={Upload} onClick={onRetry}>다시 시도</Button>
+              <Button variant="ghost" onClick={onBack}>이전</Button>
             </div>
           </div>
         ) : (
@@ -105,7 +105,7 @@ export function RenderStep({ settings: s, ctx, destination, name, state, onCance
             </div>
             <div
               role="progressbar"
-              aria-label="Render progress"
+              aria-label="렌더링 진행률"
               aria-valuenow={Math.round(state.progress * 100)}
               aria-valuemin={0}
               aria-valuemax={100}
@@ -114,11 +114,11 @@ export function RenderStep({ settings: s, ctx, destination, name, state, onCance
               <div className="h-full rounded-full bg-foreground transition-[width] duration-100 ease-linear" style={{ width: `${state.progress * 100}%` }} />
             </div>
             <div className="mt-2 flex items-center justify-between gap-3 text-[11px] tabular-nums text-muted-foreground">
-              <span>{Math.round(state.progress * 100)}% · frame {state.frame.toLocaleString()} of {state.totalFrames.toLocaleString()}</span>
-              <span>{state.fps.toLocaleString()} fps</span>
+              <span>{Math.round(state.progress * 100)}% · {state.frame.toLocaleString()}/{state.totalFrames.toLocaleString()} 프레임</span>
+              <span>{state.fps.toLocaleString()}fps</span>
             </div>
             <div className="mt-5 flex justify-center">
-              <Button variant="secondary" leadingIcon={X} onClick={onCancel}>Cancel</Button>
+              <Button variant="secondary" leadingIcon={X} onClick={onCancel}>취소</Button>
             </div>
           </>
         )}

@@ -38,7 +38,7 @@ export function FontField({ api }: { api: TextApi }) {
         <span className="min-w-0 flex-1 truncate text-[13px]" style={{ fontFamily: fontFamilyFor(api.text.font) }}>
           {api.text.font}
         </span>
-        <span className="shrink-0 text-[11px] text-muted-foreground">Browse</span>
+        <span className="shrink-0 text-[11px] text-muted-foreground">찾아보기</span>
       </button>
       <FontPickerDialog
         open={open}
@@ -56,9 +56,9 @@ export function TextMetrics({ api }: { api: TextApi }) {
   const { text } = api;
   return (
     <div className="grid grid-cols-2 gap-3">
-      <Field label="Size">
+      <Field label="크기">
         <NumberField
-          label="Font size"
+          label="글자 크기"
           value={text.size}
           min={8}
           max={400}
@@ -68,9 +68,9 @@ export function TextMetrics({ api }: { api: TextApi }) {
           onCommit={api.commit}
         />
       </Field>
-      <Field label="Weight">
+      <Field label="굵기">
         <NumberField
-          label="Weight"
+          label="굵기"
           value={text.weight}
           min={100}
           max={900}
@@ -79,10 +79,10 @@ export function TextMetrics({ api }: { api: TextApi }) {
           onCommit={api.commit}
         />
       </Field>
-      <Field label="Tracking">
+      <Field label="자간">
         {/* Stored as em × 100; shown and typed in em. */}
         <NumberField
-          label="Letter spacing"
+          label="자간"
           value={text.tracking / 100}
           min={-0.2}
           max={0.4}
@@ -93,10 +93,10 @@ export function TextMetrics({ api }: { api: TextApi }) {
           onCommit={api.commit}
         />
       </Field>
-      <Field label="Leading">
+      <Field label="행간">
         {/* Stored as a unitless multiple × 100. */}
         <NumberField
-          label="Line height"
+          label="행간"
           value={text.leading / 100}
           min={0.7}
           max={2.5}
@@ -113,10 +113,10 @@ export function TextMetrics({ api }: { api: TextApi }) {
 export function AlignTabs({ value, onChange, className }: { value: TextAlign; onChange: (a: TextAlign) => void; className?: string }) {
   return (
     <Tabs size="compact" value={value} onValueChange={(v) => onChange(v as TextAlign)} className={className}>
-      <TabsList aria-label="Alignment">
-        <TabItem value="left" icon={AlignLeft} label="Left" />
-        <TabItem value="center" icon={AlignCenter} label="Center" />
-        <TabItem value="right" icon={AlignRight} label="Right" />
+      <TabsList aria-label="정렬">
+        <TabItem value="left" icon={AlignLeft} label="왼쪽" />
+        <TabItem value="center" icon={AlignCenter} label="가운데" />
+        <TabItem value="right" icon={AlignRight} label="오른쪽" />
       </TabsList>
     </Tabs>
   );
@@ -131,7 +131,7 @@ export function AlignRow({ api }: { api: TextApi }) {
         size="icon-compact"
         variant={api.text.italic ? "secondary" : "ghost"}
         active={api.text.italic}
-        aria-label="Italic"
+        aria-label="기울임"
         aria-pressed={api.text.italic}
         onClick={() => api.patch({ italic: !api.text.italic })}
       >
@@ -148,7 +148,7 @@ export function ColorRow({ api }: { api: TextApi }) {
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-2">
         {TEXT_SWATCHES.map((c) => (
-          <ColorSwatch key={c} color={c} size={24} selected={current === c.toUpperCase()} onClick={() => api.patch({ color: c })} />
+          <ColorSwatch key={c} color={c} size={24} aria-label={`색상 ${c}`} selected={current === c.toUpperCase()} onClick={() => api.patch({ color: c })} />
         ))}
       </div>
       <ColorPickerPopover

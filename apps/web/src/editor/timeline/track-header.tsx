@@ -18,6 +18,14 @@ const KIND_ICON: Record<TrackKind, typeof Video01Icon> = {
   effect: SparklesIcon,
 };
 
+/** Track kind as shown in the expanded header row. */
+const KIND_LABEL: Record<TrackKind, string> = {
+  video: "비디오",
+  audio: "오디오",
+  text: "텍스트",
+  effect: "효과",
+};
+
 export function KindIcon({ kind, size = 14 }: { kind: TrackKind; size?: number }) {
   return <HugeiconsIcon icon={KIND_ICON[kind]} size={size} strokeWidth={1.5} />;
 }
@@ -70,13 +78,13 @@ export function TrackHeader({
         </span>
         <span className="truncate text-[12px] font-medium">{track.name}</span>
         <div className="ml-auto flex items-center gap-0.5">
-          {chip("M", track.muted, "Mute", () => actions.toggleTrack(track.id, "muted"), "bg-destructive-light text-destructive")}
-          {chip("S", solo, "Solo (view only)", onSolo)}
-          {chip("L", track.locked, "Lock", () => actions.toggleTrack(track.id, "locked"))}
-          <Tooltip content={track.hidden ? "Show" : "Hide"}>
+          {chip("M", track.muted, "음소거", () => actions.toggleTrack(track.id, "muted"), "bg-destructive-light text-destructive")}
+          {chip("S", solo, "솔로 (보기 전용)", onSolo)}
+          {chip("L", track.locked, "잠금", () => actions.toggleTrack(track.id, "locked"))}
+          <Tooltip content={track.hidden ? "보이기" : "숨기기"}>
             <button
               type="button"
-              aria-label={track.hidden ? "Show track" : "Hide track"}
+              aria-label={track.hidden ? "트랙 보이기" : "트랙 숨기기"}
               onClick={() => actions.toggleTrack(track.id, "hidden")}
               className="grid size-5 place-items-center rounded-sm text-muted-foreground hover:bg-hover hover:text-foreground"
             >
@@ -87,17 +95,15 @@ export function TrackHeader({
       </div>
       {tall && (
         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-          <span>{track.kind}</span>
+          <span>{KIND_LABEL[track.kind]}</span>
           <span>·</span>
-          <span>
-            {clips} clip{clips === 1 ? "" : "s"}
-          </span>
+          <span>클립 {clips}개</span>
         </div>
       )}
       <button
         type="button"
         onClick={onTall}
-        aria-label={tall ? "Collapse track" : "Expand track"}
+        aria-label={tall ? "트랙 접기" : "트랙 펼치기"}
         className="absolute bottom-0 right-1 text-[9px] leading-none text-muted-foreground hover:text-foreground"
       >
         {tall ? "▴" : "▾"}

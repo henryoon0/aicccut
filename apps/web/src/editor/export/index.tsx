@@ -15,7 +15,7 @@ import {
 } from "./settings";
 
 type Step = 0 | 1 | 2;
-const STEPS = ["What", "Where", "Render"] as const;
+const STEPS = ["무엇을", "어디로", "렌더링"] as const;
 
 /**
  * ExportWizard — three calm screens over the document: What (format and
@@ -104,8 +104,8 @@ export function ExportWizard() {
         onInteractOutside={(e) => { if (busy) e.preventDefault(); }}
       >
         <DialogHeader className="sr-only">
-          <DialogTitle>Export</DialogTitle>
-          <DialogDescription>Pick a format, choose where the file goes, then render.</DialogDescription>
+          <DialogTitle>내보내기</DialogTitle>
+          <DialogDescription>형식을 고르고, 저장 위치를 정한 다음 렌더링합니다.</DialogDescription>
         </DialogHeader>
 
         <header className="flex h-12 shrink-0 items-center gap-1 border-b border-border px-4">
@@ -134,7 +134,7 @@ export function ExportWizard() {
               {i < STEPS.length - 1 && <span className="ml-1 h-px w-6 bg-border" />}
             </button>
           ))}
-          <Button variant="ghost" size="icon-compact" className="ml-auto" aria-label="Close" onClick={dismiss} disabled={busy}>
+          <Button variant="ghost" size="icon-compact" className="ml-auto" aria-label="닫기" onClick={dismiss} disabled={busy}>
             <X />
           </Button>
         </header>

@@ -1,6 +1,6 @@
 # Editor core
 
-Pure data + a tiny store for the OpenCut web editor. No UI here. Import from `#/editor/core`.
+Pure data + a tiny store for the AiccCut web editor. No UI here. Import from `#/editor/core`.
 
 ## Store shape
 
@@ -70,6 +70,6 @@ useAutosave(store);                                    // debounced saveDocument
 - `types.ts` data model · `seed.ts` sample data, fonts, effects, timecode helpers
 - `animation.ts` easing, `interpolate`, `evaluateClip` · `document.ts` + `clip-props.ts` pure edits
 - `time-store.ts`, `transport.ts` playback · `store.ts`, `actions.ts`, `context.ts` state + React bindings
-- `persistence.ts` localStorage (`opencut.projects`, `opencut.doc.<id>`) · `shortcuts.ts`, `commands.ts` registry + keys
+- `persistence.ts` localStorage (`aicccut.projects`, `aicccut.doc.<id>`) · `shortcuts.ts`, `commands.ts` registry + keys
 
 Units: seconds, canvas px, percent (scale/opacity, 100 = unchanged), degrees. Keyframe `time` is clip-relative.

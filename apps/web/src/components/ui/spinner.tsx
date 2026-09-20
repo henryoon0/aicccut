@@ -13,7 +13,7 @@ function Spinner({ className, size = 16, ...props }: SpinnerProps) {
       size={size}
       strokeWidth={2}
       role="status"
-      aria-label="Loading"
+      aria-label="불러오는 중"
       className={cn("size-4 animate-spin", className)}
       {...props}
     />

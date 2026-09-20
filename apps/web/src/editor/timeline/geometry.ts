@@ -97,5 +97,5 @@ export function trackAtPoint(rows: HTMLElement | null, clientY: number): string 
   return null;
 }
 
-/** "+1.2 s" / "−0.4 s" for trim readouts. */
-export const formatDelta = (d: number, digits = 2) => `${d < 0 ? "−" : "+"}${Math.abs(d).toFixed(digits)} s`;
+/** "+1.20초" / "−0.40초" for trim readouts. */
+export const formatDelta = (d: number, digits = 2) => `${d < 0 ? "−" : "+"}${Math.abs(d).toFixed(digits)}초`;

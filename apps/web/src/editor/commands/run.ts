@@ -10,7 +10,7 @@ import { useCallback } from "react";
 import { toast } from "sonner";
 import { COMMANDS_BY_ID, runCommand, timecode, useCommandContext, type Command, type CommandContext } from "#/editor/core";
 
-export const RECENT_KEY = "opencut.commands.recent";
+export const RECENT_KEY = "aicccut.commands.recent";
 export const RECENT_MAX = 6;
 
 /** Recently run command ids, newest first. Empty on the server. */
@@ -50,7 +50,7 @@ export function isEnabled(cmd: Command, ctx: CommandContext): boolean {
   return cmd.enabled ? cmd.enabled(ctx) : true;
 }
 
-/** Fallback confirmation for commands that return nothing, e.g. "Next frame · 00:00:12.04". */
+/** Fallback confirmation for commands that return nothing, e.g. "다음 프레임 · 00:00:12.04". */
 function fallbackMessage(cmd: Command, ctx: CommandContext): string {
   const { fps } = ctx.store.getState().doc.project;
   return `${cmd.label} · ${timecode(ctx.time.get(), fps)}`;
