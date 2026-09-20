@@ -32,9 +32,16 @@ const RESOLUTIONS: readonly { value: Resolution; label: string }[] = [
   { value: "custom", label: "직접 입력" },
 ];
 
-interface Draft { name: string; aspect: Aspect; fps: Fps; resolution: Resolution; customWidth: number; customHeight: number }
+/** Custom width/height stay as typed (strings) so "720" is not clamped to "16…" mid-keystroke; they are parsed by `customSize`. */
+interface Draft { name: string; aspect: Aspect; fps: Fps; resolution: Resolution; customWidth: string; customHeight: string }
 
-const DEFAULT_DRAFT: Draft = { name: "", aspect: "16:9", fps: 30, resolution: "1080p", customWidth: 1920, customHeight: 1080 };
+const DEFAULT_DRAFT: Draft = { name: "", aspect: "16:9", fps: 30, resolution: "1080p", customWidth: "1920", customHeight: "1080" };
+
+const MIN_SIDE = 16;
+const MAX_SIDE = 8192;
+const digitsOnly = (v: string) => v.replace(/\D/g, "").slice(0, 5);
+/** Parse a typed side length; blank or out-of-range falls back to the bound. */
+const customSide = (v: string) => Math.min(MAX_SIDE, Math.max(MIN_SIDE, Number(v) || MIN_SIDE));
 
 const aspectDef = (id: Aspect) => ASPECTS.find((a) => a.id === id) ?? ASPECTS[0];
 const isFps = (n: number): n is Fps => n === 24 || n === 25 || n === 30 || n === 60;
@@ -42,7 +49,7 @@ const isResolution = (s: string): s is Resolution => s === "1080p" || s === "4k"
 
 /** Pixel dimensions implied by a draft: short side 1080 (1080p) or 2160 (4K), long side follows the ratio. */
 function dimensionsFor(draft: Draft): { width: number; height: number } {
-  if (draft.resolution === "custom") return { width: draft.customWidth, height: draft.customHeight };
+  if (draft.resolution === "custom") return { width: customSide(draft.customWidth), height: customSide(draft.customHeight) };
   const short = draft.resolution === "4k" ? 2160 : 1080;
   const a = aspectDef(draft.aspect);
   return a.w >= a.h ? { width: Math.round((short * a.w) / a.h), height: short } : { width: short, height: Math.round((short * a.h) / a.w) };
@@ -99,7 +106,9 @@ export function NewProjectDialog({ open, onOpenChange, onCreate }: { open: boole
       <DialogContent
         size="lg"
         onKeyDown={(e) => {
-          if (e.key === "Enter" && !creating && !(e.target instanceof HTMLButtonElement)) {
+          // Enter submits only from a text field. Buttons/radios/select options
+          // (whose keydown bubbles up through the portal) keep their own Enter.
+          if (e.key === "Enter" && !creating && e.target instanceof HTMLInputElement) {
             e.preventDefault();
             void submit();
           }
@@ -168,9 +177,9 @@ export function NewProjectDialog({ open, onOpenChange, onCreate }: { open: boole
           </div>
 
           {draft.resolution === "custom" && (
-            <InputGroup size="compact">
-              <InputField label="가로" index={0} inputMode="numeric" value={String(draft.customWidth)} onChange={(v) => patch({ customWidth: Math.max(16, Number(v.replace(/\D/g, "")) || 0) })} />
-              <InputField label="세로" index={1} inputMode="numeric" value={String(draft.customHeight)} onChange={(v) => patch({ customHeight: Math.max(16, Number(v.replace(/\D/g, "")) || 0) })} />
+            <InputGroup size="compact" className="w-full flex-row">
+              <InputField label="가로" index={0} className="flex-1" inputMode="numeric" value={draft.customWidth} onChange={(v) => patch({ customWidth: digitsOnly(v) })} onBlur={() => patch({ customWidth: String(customSide(draft.customWidth)) })} />
+              <InputField label="세로" index={1} className="flex-1" inputMode="numeric" value={draft.customHeight} onChange={(v) => patch({ customHeight: digitsOnly(v) })} onBlur={() => patch({ customHeight: String(customSide(draft.customHeight)) })} />
             </InputGroup>
           )}
 

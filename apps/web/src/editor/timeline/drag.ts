@@ -28,7 +28,7 @@ export interface TrimState {
   clipId: string;
   edge: Edge;
   label: string;
-  /** Seconds the edge travelled; negative shortens the clip. */
+  /** Seconds the edge travelled: negative means earlier (a start edge grows the clip, an end edge shrinks it). */
   delta: number;
   duration: number;
   clientX: number;
@@ -225,8 +225,12 @@ export function useTimelineDrags(view: Viewport): TimelineDrags {
       }
       const kind = trackKindFor(asset.kind);
       const hit = trackAtPoint(rowsRef.current, d.clientY);
+      const hitTrack = hit ? trackById(st.doc, hit) : undefined;
+      // A row of the right kind takes the drop; a locked one refuses it
+      // outright (no ghost) rather than silently landing elsewhere. Rows of
+      // another kind fall back to the first unlocked track of the kind.
       const trackId =
-        hit && trackById(st.doc, hit)?.kind === kind ? hit : st.doc.tracks.find((t) => t.kind === kind && !t.locked)?.id;
+        hitTrack?.kind === kind ? (hitTrack.locked ? undefined : hitTrack.id) : st.doc.tracks.find((t) => t.kind === kind && !t.locked)?.id;
       if (!trackId) {
         setGhost(null);
         return;

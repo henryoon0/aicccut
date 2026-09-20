@@ -36,6 +36,18 @@ export function snapToFrame(t: number, fps: number): number {
 }
 const snapD = (doc: Document, t: number) => snapToFrame(t, doc.project.fps);
 
+/** True when the clip sits on a locked track (edits must leave it alone). */
+export function isClipLocked(doc: Document, clip: Clip): boolean {
+  return trackById(doc, clip.trackId)?.locked === true;
+}
+/** Drop ids whose clip is on a locked track. */
+export function unlockedIds(doc: Document, ids: string[]): string[] {
+  return ids.filter((id) => {
+    const c = clipById(doc, id);
+    return c !== undefined && !isClipLocked(doc, c);
+  });
+}
+
 /** Clip by id, or undefined. */
 export const clipById = (doc: Document, id: string) => doc.clips.find((c) => c.id === id);
 /** Track by id, or undefined. */
@@ -198,7 +210,7 @@ export function moveClip(doc: Document, id: string, start: number, trackId?: str
 /** Trim one edge by `delta` seconds. Respects inPoint ≥ 0, source length and neighbours; ripple closes the gap. */
 export function trimClip(doc: Document, id: string, edge: Edge, delta: number, ripple: boolean): Document {
   const c = clipById(doc, id);
-  if (!c || Math.abs(delta) < EPS) return doc;
+  if (!c || Math.abs(delta) < EPS || isClipLocked(doc, c)) return doc;
   const MIN = minDuration(doc);
   const { prev, next } = neighbors(doc, c);
   const src = sourceDuration(doc, c);
@@ -222,7 +234,7 @@ export function trimClip(doc: Document, id: string, edge: Edge, delta: number, r
 /** Slide the source window without moving the clip. */
 export function slipClip(doc: Document, id: string, delta: number): Document {
   const c = clipById(doc, id);
-  if (!c || !canSlip(doc, c)) return doc;
+  if (!c || !canSlip(doc, c) || isClipLocked(doc, c)) return doc;
   const ni = clamp(snapD(doc, c.inPoint + delta), 0, sourceDuration(doc, c) - c.duration);
   if (Math.abs(ni - c.inPoint) < EPS) return doc;
   return withClips(doc, doc.clips.map((x) => (x.id === id ? { ...x, inPoint: ni } : x)));
@@ -259,7 +271,9 @@ function splitKeyframes(c: Clip, cut: number): { left: Clip["props"]["keyframes"
 }
 
 /** Split every listed clip that crosses `t`. Returns the ids of the right-hand halves. */
-export function splitClips(doc: Document, ids: string[], t: number): { doc: Document; rightIds: string[] } {
+export function splitClips(doc: Document, rawIds: string[], t: number): { doc: Document; rightIds: string[] } {
+  const ids = unlockedIds(doc, rawIds);
+  if (!ids.length) return { doc, rightIds: [] };
   const MIN = minDuration(doc);
   const rightIds: string[] = [];
   const out: Clip[] = [];
@@ -279,7 +293,9 @@ export function splitClips(doc: Document, ids: string[], t: number): { doc: Docu
 }
 
 /** Delete clips; with `ripple`, later clips on the same track close the gap. */
-export function deleteClips(doc: Document, ids: string[], ripple: boolean): Document {
+export function deleteClips(doc: Document, rawIds: string[], ripple: boolean): Document {
+  const ids = unlockedIds(doc, rawIds);
+  if (!ids.length) return doc;
   let cur = doc.clips;
   const order = [...ids].sort((a, b) => (clipById(doc, a)?.start ?? 0) - (clipById(doc, b)?.start ?? 0));
   for (const id of order) {
@@ -294,14 +310,15 @@ export function deleteClips(doc: Document, ids: string[], ripple: boolean): Docu
 /** Copy a clip right after itself, pushing later clips on the track. */
 export function duplicateClip(doc: Document, id: string): { doc: Document; newId?: string } {
   const c = clipById(doc, id);
-  if (!c) return { doc };
+  if (!c || isClipLocked(doc, c)) return { doc };
   const copy: Clip = { ...c, id: newId("c"), start: endOf(c), props: { ...c.props, effects: c.props.effects.map((e) => ({ ...e, id: newId("e") })) } };
-  const shifted = shiftTrackAfter(doc, doc.clips, c.trackId, endOf(c), c.duration, id);
-  return { doc: withClips(doc, [...shifted, copy]), newId: copy.id };
+  // Same rule as adding from the library: later clips move only by the overlap.
+  return { doc: withClips(doc, insertPushingRight(doc, doc.clips, copy)), newId: copy.id };
 }
 
 /** Flip `muted` on the listed clips. */
-export function toggleClipsMuted(doc: Document, ids: string[]): Document {
+export function toggleClipsMuted(doc: Document, rawIds: string[]): Document {
+  const ids = unlockedIds(doc, rawIds);
   if (!ids.length) return doc;
   return withClips(doc, doc.clips.map((x) => (ids.includes(x.id) ? { ...x, muted: !x.muted } : x)));
 }
@@ -336,8 +353,11 @@ export function removeTrack(doc: Document, id: string): Document {
 // ── Bookmarks ──────────────────────────────────────────────
 
 /** Add a bookmark at `time`. */
-export function addBookmark(doc: Document, time: number, label = "", color = "#ffd166"): { doc: Document; bookmark: Bookmark } {
-  const bookmark: Bookmark = { id: newId("b"), time: Math.max(0, snapD(doc, time)), label, color };
+export function addBookmark(doc: Document, time: number, label = "", color = "#ffd166"): { doc: Document; bookmark: Bookmark; existed?: boolean } {
+  const t = Math.max(0, snapD(doc, time));
+  const existing = doc.bookmarks.find((b) => Math.abs(b.time - t) < frameDuration(doc) / 2);
+  if (existing) return { doc, bookmark: existing, existed: true };
+  const bookmark: Bookmark = { id: newId("b"), time: t, label, color };
   return { doc: { ...doc, bookmarks: [...doc.bookmarks, bookmark].sort((a, b) => a.time - b.time) }, bookmark };
 }
 

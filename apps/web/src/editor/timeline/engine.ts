@@ -33,12 +33,15 @@ export interface Viewport {
   /** Zoom by a factor, keeping the time at `viewportX` (px from the lanes' left edge) fixed. */
   zoomAround: (factor: number, viewportX: number) => void;
   zoomBy: (factor: number) => void;
+  /** Fit the document into the lane width and scroll home. */
+  zoomToFit: () => void;
 }
 
 /** Zoom, scroll geometry and the width report the store needs for "fit". */
 export function useViewport(): Viewport {
   const actions = useActions();
   const store = useEditorStore();
+  const { time } = useEditorContext();
   const pps = useEditor((s) => s.zoomPps);
   const docDuration = useEditor((s) => documentDuration(s.doc));
   const duration = Math.max(30, docDuration);
@@ -77,14 +80,48 @@ export function useViewport(): Viewport {
     [zoomAround],
   );
 
-  // Re-anchor the scroll after a zoom so the cursor stays on the same frame.
+  // Anchored at 0 so the view starts from the head even when the document
+  // is too long to fit at the minimum zoom.
+  const zoomToFit = useCallback(() => {
+    const before = ppsRef.current;
+    anchorRef.current = { t: 0, x: 0 };
+    actions.zoomToFit();
+    if (store.getState().zoomPps === before) {
+      // Already fitted: no zoom change, so no layout pass; scroll home now.
+      anchorRef.current = null;
+      const el = scrollRef.current;
+      if (el) el.scrollLeft = 0;
+    }
+  }, [actions, store]);
+
+  // Zooms that arrive without an anchor (keyboard = / -, presets, Shift+Z)
+  // keep the playhead still when it is in view, else the viewport centre.
+  // The anchor is taken in the store listener, before React resizes the
+  // lanes, so a shrinking content width cannot clamp the scroll first.
+  useEffect(() => {
+    let last = store.getState().zoomPps;
+    return store.subscribe((s) => {
+      if (s.zoomPps === last) return;
+      const el = scrollRef.current;
+      if (el && !anchorRef.current) {
+        const viewW = el.clientWidth - HEADER_W;
+        const x = time.get() * last - el.scrollLeft;
+        const vx = x >= 0 && x <= viewW ? x : viewW / 2;
+        anchorRef.current = { t: (vx + el.scrollLeft) / last, x: vx };
+      }
+      last = s.zoomPps;
+    });
+  }, [store, time]);
+
+  // Re-anchor the scroll after a zoom so the anchored time stays put. When
+  // the whole document now fits, scroll home so "fit" shows it from 0.
   useLayoutEffect(() => {
     const a = anchorRef.current;
     anchorRef.current = null;
     const el = scrollRef.current;
     if (!a || !el) return;
-    el.scrollLeft = Math.max(0, a.t * pps - a.x);
-  }, [pps]);
+    el.scrollLeft = docDuration * pps <= el.clientWidth - HEADER_W ? 0 : Math.max(0, a.t * pps - a.x);
+  }, [pps, docDuration]);
 
   // Cmd/Ctrl + wheel zooms at the cursor; Shift + wheel pans.
   useEffect(() => {
@@ -120,8 +157,8 @@ export function useViewport(): Viewport {
   }, [actions, store]);
 
   return useMemo(
-    () => ({ scrollRef, rowsRef, pps, ppsRef, duration, contentW, xToTime, zoomAround, zoomBy }),
-    [pps, duration, contentW, xToTime, zoomAround, zoomBy],
+    () => ({ scrollRef, rowsRef, pps, ppsRef, duration, contentW, xToTime, zoomAround, zoomBy, zoomToFit }),
+    [pps, duration, contentW, xToTime, zoomAround, zoomBy, zoomToFit],
   );
 }
 
@@ -162,7 +199,10 @@ export function usePlaybackAutoscroll(view: Viewport) {
       if (!el) return;
       const x = t * ppsRef.current - el.scrollLeft;
       const view_ = el.clientWidth - HEADER_W;
-      if (x > view_ - 24 || x < 0) el.scrollLeft = Math.max(0, t * ppsRef.current - 24);
+      // Forwards the playhead lands near the left edge of the new page,
+      // backwards (J shuttle) near the right edge, so each flip is a page.
+      if (x > view_ - 24) el.scrollLeft = Math.max(0, t * ppsRef.current - 24);
+      else if (x < 0) el.scrollLeft = Math.max(0, t * ppsRef.current - (view_ - 24));
     });
   }, [playing, time, scrollRef, ppsRef]);
 }

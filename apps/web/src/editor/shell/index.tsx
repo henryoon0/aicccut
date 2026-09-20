@@ -9,7 +9,9 @@
  * Shortcut confirmations go to the commands area's toast host, which
  * `CommandPalette` keeps mounted here.
  */
-import { useEditorStore } from "#/editor/core";
+import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useActions, useEditor, useEditorStore } from "#/editor/core";
 import { CommandPalette, ShortcutsSheet } from "#/editor/commands";
 import { ExportWizard } from "#/editor/export";
 import { Preview, TransportBar } from "#/editor/preview";
@@ -49,6 +51,17 @@ export function EditorShell() {
   const saveStatus = useSaveStatus(store);
   const [theme, toggleTheme] = useTheme();
   useRailKeys();
+
+  // ⌘N from inside the editor: the project gallery owns the create dialog, so
+  // hand over to it with ?new=1 and clear the request here.
+  const wantsNewProject = useEditor((s) => s.uiPanels.dialog === "new-project");
+  const actions = useActions();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!wantsNewProject) return;
+    actions.closeDialog();
+    navigate({ to: "/", search: { new: 1 } });
+  }, [wantsNewProject, actions, navigate]);
 
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-surface-1 text-foreground">

@@ -172,8 +172,10 @@ export function ChannelSlider({
         }
       />
       <ScrubRegion>
+        {/* `label` is what names the thumb; `aria-label` would land on the
+            role-less root and leave the slider unnamed. */}
         <Slider
-          aria-label={name}
+          label={name}
           value={value}
           min={min}
           max={max}

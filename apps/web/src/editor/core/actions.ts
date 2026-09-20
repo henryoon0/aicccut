@@ -161,11 +161,12 @@ export function createActions(store: EditorStore) {
       return trackId;
     },
     removeTrack: (id: string, o?: MutateOpts) => mut((d) => D.removeTrack(d, id), o),
-    addBookmark: (time: number, label?: string, color?: string, o?: MutateOpts) => {
-      let id = "";
+    /** Returns the bookmark id, or null when one already sits on that frame (nothing changes). */
+    addBookmark: (time: number, label?: string, color?: string, o?: MutateOpts): string | null => {
+      let id: string | null = null;
       mut((d) => {
         const r = D.addBookmark(d, time, label, color);
-        id = r.bookmark.id;
+        id = r.existed ? null : r.bookmark.id;
         return r.doc;
       }, o);
       return id;

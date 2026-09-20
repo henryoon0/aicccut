@@ -2,7 +2,7 @@
  * One composited clip. Media clips cover the whole frame; text clips hang off
  * its centre and size themselves. Both carry the same evaluated transform,
  * and the selection frame sits outside the filtered content so handles stay
- * crisp through a blur.
+ * crisp through a blur, whether it comes from the clip or an effect track.
  */
 import { useEffect, useRef, type CSSProperties } from "react";
 import { evaluateClip, useActions, type AssetKind, type Clip, type Project } from "#/editor/core";
@@ -24,9 +24,11 @@ export interface ClipLayerProps {
   stageScale: number;
   /** False on a locked track: no selecting, no dragging. */
   interactive: boolean;
+  /** Combined CSS filter of the effect tracks above this layer, if any. */
+  stackFilter?: string;
 }
 
-export function ClipLayer({ clip, time, project, kind, playing, muted, selected, stageScale, interactive }: ClipLayerProps) {
+export function ClipLayer({ clip, time, project, kind, playing, muted, selected, stageScale, interactive, stackFilter }: ClipLayerProps) {
   const actions = useActions();
   const url = useAssetUrl(clip.assetId);
   const elRef = useRef<HTMLDivElement>(null);
@@ -34,7 +36,8 @@ export function ClipLayer({ clip, time, project, kind, playing, muted, selected,
 
   const v = evaluateClip(clip, time);
   const isText = !!clip.props.text;
-  const filter = clipFilter(clip, v.blur);
+  // The clip's own filter runs first, then whatever the effect tracks add.
+  const filter = [clipFilter(clip, v.blur), stackFilter].filter(Boolean).join(" ");
   const vignette = vignetteAmount(clip);
 
   const centre = () => {
@@ -200,13 +203,21 @@ interface SelectionFrameProps {
   onUp: (e: React.PointerEvent) => void;
 }
 
+/** Screen pixels of the visible handle square and of its (larger) hit target. */
+const HANDLE_PX = 9;
+const HANDLE_HIT_PX = 22;
+
 function SelectionFrame({ unit, interactive, onHandle, onMove, onUp }: SelectionFrameProps) {
-  const size = 9 * unit;
+  const size = HANDLE_PX * unit;
+  // A full-frame clip puts its corners on the stage edge, where the stage
+  // clips half of every handle; the wider hit target keeps the inner part
+  // comfortably grabbable.
+  const hit = HANDLE_HIT_PX * unit;
   const corners: { key: string; style: CSSProperties; cursor: string }[] = [
-    { key: "tl", style: { left: -size / 2, top: -size / 2 }, cursor: "nwse-resize" },
-    { key: "tr", style: { right: -size / 2, top: -size / 2 }, cursor: "nesw-resize" },
-    { key: "bl", style: { left: -size / 2, bottom: -size / 2 }, cursor: "nesw-resize" },
-    { key: "br", style: { right: -size / 2, bottom: -size / 2 }, cursor: "nwse-resize" },
+    { key: "tl", style: { left: -hit / 2, top: -hit / 2 }, cursor: "nwse-resize" },
+    { key: "tr", style: { right: -hit / 2, top: -hit / 2 }, cursor: "nesw-resize" },
+    { key: "bl", style: { left: -hit / 2, bottom: -hit / 2 }, cursor: "nesw-resize" },
+    { key: "br", style: { right: -hit / 2, bottom: -hit / 2 }, cursor: "nwse-resize" },
   ];
   return (
     <>
@@ -224,16 +235,19 @@ function SelectionFrame({ unit, interactive, onHandle, onMove, onUp }: Selection
             onPointerMove={onMove}
             onPointerUp={onUp}
             onPointerCancel={onUp}
-            className="absolute touch-none bg-background"
-            style={{
-              ...c.style,
-              width: size,
-              height: size,
-              cursor: c.cursor,
-              borderRadius: 2 * unit,
-              border: `${(1.2 * unit).toFixed(2)}px solid var(--foreground)`,
-            }}
-          />
+            className="absolute grid touch-none place-items-center"
+            style={{ ...c.style, width: hit, height: hit, cursor: c.cursor }}
+          >
+            <div
+              className="bg-background"
+              style={{
+                width: size,
+                height: size,
+                borderRadius: 2 * unit,
+                border: `${(1.2 * unit).toFixed(2)}px solid var(--foreground)`,
+              }}
+            />
+          </div>
         ))}
     </>
   );

@@ -6,7 +6,7 @@
 import { useEffect, useMemo } from "react";
 import type { Actions } from "./actions";
 import { useEditorContext } from "./context";
-import { documentDuration } from "./document";
+import { documentDuration, unlockedIds } from "./document";
 import { timecode } from "./seed";
 import { hasModifier, isEditableTarget, matchesShortcut, parseShortcut, shortcutSpecificity } from "./shortcuts";
 import type { EditorStore, UiState } from "./store";
@@ -57,7 +57,11 @@ export const ZOOM_PRESETS = [
   { id: "zoom-frames", label: "타임라인 배율: 프레임 단위", pps: 300, shortcut: "Alt+4" },
 ];
 
-const hasSelection = (ctx: CommandContext) => ctx.store.getState().selection.clipIds.length > 0;
+/** Selection exists and at least one selected clip is on an unlocked track. */
+const hasEditableSelection = (ctx: CommandContext) => {
+  const s = ctx.store.getState();
+  return unlockedIds(s.doc, s.selection.clipIds).length > 0;
+};
 const tc = (ctx: CommandContext) => timecode(ctx.time.get(), ctx.store.getState().doc.project.fps);
 const primary = (ctx: CommandContext) => {
   const ids = ctx.store.getState().selection.clipIds;
@@ -75,9 +79,9 @@ export const COMMAND_LIST: Command[] = [
   // ── Edit ──
   { id: "split", label: "재생 헤드에서 클립 분할", shortcut: "S", group: "Edit", keywords: ["split", "cut", "razor", "blade", "분할", "자르기", "컷"],
     run: (ctx) => (ctx.actions.splitClips(undefined, ctx.time.get()).length ? `${tc(ctx)}에서 분할` : MSG.nothingAtPlayhead) },
-  { id: "delete", label: "선택한 클립 삭제", shortcut: "Backspace", altShortcuts: ["Delete"], group: "Edit", keywords: ["delete", "remove", "trash", "삭제", "지우기"], enabled: hasSelection,
+  { id: "delete", label: "선택한 클립 삭제", shortcut: "Backspace", altShortcuts: ["Delete"], group: "Edit", keywords: ["delete", "remove", "trash", "삭제", "지우기"], enabled: hasEditableSelection,
     run: (ctx) => { ctx.actions.deleteClips(); return ctx.store.getState().ripple ? MSG.deletedGapClosed : MSG.deleted; } },
-  { id: "ripple-delete", label: "선택한 클립 리플 삭제", shortcut: "Shift+Backspace", altShortcuts: ["Shift+Delete"], group: "Edit", keywords: ["ripple delete", "close gap", "리플 삭제", "빈 공간"], enabled: hasSelection,
+  { id: "ripple-delete", label: "선택한 클립 리플 삭제", shortcut: "Shift+Backspace", altShortcuts: ["Shift+Delete"], group: "Edit", keywords: ["ripple delete", "close gap", "리플 삭제", "빈 공간"], enabled: hasEditableSelection,
     run: (ctx) => { ctx.actions.deleteClips(undefined, true); return MSG.deletedGapClosed; } },
   { id: "ripple", label: "리플 편집 켜기/끄기", shortcut: "R", group: "Edit", keywords: ["ripple", "gap", "close", "리플", "빈 공간"],
     run: (ctx) => { ctx.actions.toggleRipple(); return `리플 편집 ${ctx.store.getState().ripple ? "켬" : "꺼짐"}`; } },
@@ -85,13 +89,13 @@ export const COMMAND_LIST: Command[] = [
     run: (ctx) => { ctx.actions.undo(); return "실행 취소"; } },
   { id: "redo", label: "다시 실행", shortcut: "Mod+Shift+Z", altShortcuts: ["Mod+Y"], group: "Edit", keywords: ["redo", "다시 실행"], enabled: (ctx) => ctx.store.canRedo(),
     run: (ctx) => { ctx.actions.redo(); return "다시 실행"; } },
-  { id: "duplicate", label: "클립 복제", shortcut: "Mod+D", group: "Edit", keywords: ["duplicate", "copy", "복제", "복사"], enabled: hasSelection,
+  { id: "duplicate", label: "클립 복제", shortcut: "Mod+D", group: "Edit", keywords: ["duplicate", "copy", "복제", "복사"], enabled: hasEditableSelection,
     run: (ctx) => { ctx.actions.duplicateClip(); return "복제됨"; } },
-  { id: "mute-clip", label: "클립 음소거 / 해제", shortcut: "Shift+M", group: "Edit", keywords: ["mute", "silence", "audio", "음소거", "소리", "오디오"], enabled: hasSelection,
+  { id: "mute-clip", label: "클립 음소거 / 해제", shortcut: "Shift+M", group: "Edit", keywords: ["mute", "silence", "audio", "음소거", "소리", "오디오"], enabled: hasEditableSelection,
     run: (ctx) => { ctx.actions.toggleClipsMuted(); return "음소거 전환됨"; } },
-  { id: "trim-start-to-playhead", label: "시작점을 재생 헤드로", shortcut: "[", group: "Edit", keywords: ["trim", "in", "트림", "시작점", "앞 자르기"], enabled: hasSelection,
+  { id: "trim-start-to-playhead", label: "시작점을 재생 헤드로", shortcut: "[", group: "Edit", keywords: ["trim", "in", "트림", "시작점", "앞 자르기"], enabled: hasEditableSelection,
     run: (ctx) => { const id = primary(ctx); if (id) ctx.actions.trimToTime(id, "start", ctx.time.get()); return `시작점을 ${tc(ctx)}에 맞춤`; } },
-  { id: "trim-end-to-playhead", label: "끝점을 재생 헤드로", shortcut: "]", group: "Edit", keywords: ["trim", "out", "트림", "끝점", "뒤 자르기"], enabled: hasSelection,
+  { id: "trim-end-to-playhead", label: "끝점을 재생 헤드로", shortcut: "]", group: "Edit", keywords: ["trim", "out", "트림", "끝점", "뒤 자르기"], enabled: hasEditableSelection,
     run: (ctx) => { const id = primary(ctx); if (id) ctx.actions.trimToTime(id, "end", ctx.time.get()); return `끝점을 ${tc(ctx)}에 맞춤`; } },
   { id: "select-all", label: "모든 클립 선택", shortcut: "Mod+A", group: "Edit", keywords: ["select all", "전체 선택", "모두 선택"], run: (ctx) => { ctx.actions.selectAll(); } },
   { id: "deselect", label: "선택 해제", shortcut: "Escape", group: "Edit", keywords: ["clear selection", "deselect", "선택 해제"],
@@ -122,13 +126,13 @@ export const COMMAND_LIST: Command[] = [
   // ── Insert ──
   { id: "add-text", label: "텍스트 추가", shortcut: "T", group: "Insert", keywords: ["text", "title", "caption", "텍스트", "제목", "자막", "글자"],
     run: (ctx) => { ctx.actions.addTextClip(ctx.time.get()); return `${tc(ctx)}에 텍스트 추가`; } },
-  { id: "add-effect", label: "효과 추가…", shortcut: "E", group: "Insert", keywords: ["effect", "filter", "blur", "효과", "필터", "블러"], enabled: hasSelection,
-    run: (ctx) => { ctx.ui.openDialog("effects"); } },
+  { id: "add-effect", label: "효과 추가…", shortcut: "E", group: "Insert", keywords: ["effect", "filter", "blur", "효과", "필터", "블러"],
+    run: (ctx) => { ctx.ui.set({ mediaPanel: true, rail: "effects" }); } },
   { id: "bookmark", label: "북마크 추가", shortcut: "B", group: "Insert", keywords: ["bookmark", "marker", "북마크", "마커", "표시"],
-    run: (ctx) => { ctx.actions.addBookmark(ctx.time.get()); return `${tc(ctx)}에 북마크 추가`; } },
+    run: (ctx) => (ctx.actions.addBookmark(ctx.time.get()) ? `${tc(ctx)}에 북마크 추가` : "이미 북마크가 있습니다") },
 
   // ── File ──
-  { id: "import", label: "미디어 가져오기…", shortcut: "Mod+I", group: "File", keywords: ["import", "open", "media", "file", "가져오기", "불러오기", "미디어", "파일"], run: (ctx) => { ctx.ui.openDialog("import"); } },
+  { id: "import", label: "미디어 가져오기…", shortcut: "Mod+I", group: "File", keywords: ["import", "open", "media", "file", "가져오기", "불러오기", "미디어", "파일"], run: (ctx) => { ctx.ui.set({ mediaPanel: true, rail: "media", dialog: "import" }); } },
   { id: "export", label: "내보내기…", shortcut: "Mod+E", group: "File", keywords: ["export", "render", "save", "mp4", "내보내기", "렌더링", "저장"], run: (ctx) => { ctx.ui.openDialog("export"); } },
   { id: "new", label: "새 프로젝트", shortcut: "Mod+N", group: "File", keywords: ["new project", "새 프로젝트", "프로젝트 만들기"], run: (ctx) => { ctx.ui.openDialog("new-project"); } },
 

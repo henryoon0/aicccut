@@ -50,7 +50,9 @@ export function Timeline() {
           ref={view.scrollRef}
           className="absolute inset-0 overflow-auto"
           onPointerDown={(e) => {
-            if (e.button === 0) actions.clearSelection();
+            // Portalled children (the clip menu) bubble through React, not
+            // the DOM: only a press on the lanes themselves clears the selection.
+            if (e.button === 0 && e.currentTarget.contains(e.target as Node)) actions.clearSelection();
           }}
         >
           <div className="relative" style={{ width: HEADER_W + view.contentW, minHeight: "100%" }}>

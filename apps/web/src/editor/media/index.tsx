@@ -23,7 +23,6 @@ import { cn } from "#/lib/utils";
 import { useActions, useEditor, useEditorContext, useEditorStore, type Asset, type AssetKind } from "#/editor/core";
 import { DragGhost, useAssetDrag } from "./drag";
 import { Dropzone, DoneToast, PendingTile, WindowDropOverlay } from "./dropzone";
-import { releaseAssetFile } from "./files";
 import { SORT_KEYS, SORT_LABEL, SORT_SHORT, matchesQuery, sortAssets, type SortDir, type SortKey } from "./helpers";
 import { useDropTarget, useFilePicker, useImportFiles, usePasteImport, useWindowDrag } from "./import";
 import { Tile } from "./tile";
@@ -58,6 +57,14 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
 
   const { pending, importFiles, done, clearDone } = useImportFiles();
   const picker = useFilePicker(importFiles);
+  // The ⌘I command sets `dialog: "import"` after opening this rail; the
+  // library panel (not the audio rail) answers by opening the OS picker once.
+  const importRequested = useEditor((s) => s.uiPanels.dialog === "import");
+  useEffect(() => {
+    if (!importRequested || lock) return;
+    actions.closeDialog();
+    picker.open();
+  }, [importRequested, lock, actions, picker]);
   const drop = useDropTarget(importFiles);
   const windowDragging = useWindowDrag(importFiles);
   usePasteImport(importFiles);
@@ -92,13 +99,12 @@ export function MediaPanel({ filter: lock }: MediaPanelProps = {}) {
     [actions, time],
   );
 
-  const remove = useCallback(
-    (assetId: string) => {
-      actions.removeAsset(assetId);
-      releaseAssetFile(assetId);
-    },
-    [actions],
-  );
+  /**
+   * Removal is a document edit, so undo can bring the asset back. Its file
+   * stays in the in-memory registry for that reason; releasing it here would
+   * leave the undone asset (and its clips) showing only their tint.
+   */
+  const remove = useCallback((assetId: string) => actions.removeAsset(assetId), [actions]);
 
   /**
    * Rename through the store so it lands in history like any other edit.

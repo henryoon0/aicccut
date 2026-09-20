@@ -58,15 +58,7 @@ export function Toolbar({ view }: { view: Viewport }) {
           </Button>
         </Tooltip>
         <Tooltip content="타임라인 맞춤 (⇧Z)">
-          <Button
-            variant="ghost"
-            size="compact"
-            onClick={() => {
-              actions.zoomToFit();
-              const el = view.scrollRef.current;
-              if (el) el.scrollLeft = 0;
-            }}
-          >
+          <Button variant="ghost" size="compact" onClick={view.zoomToFit}>
             맞춤
           </Button>
         </Tooltip>

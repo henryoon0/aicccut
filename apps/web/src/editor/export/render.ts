@@ -141,17 +141,22 @@ export function useDocumentRender() {
 
       setState({ ...IDLE, status: "rendering", totalFrames: total, frameInfo: sample(plan.startTime) });
 
-      const tick = (now: number) => {
+      const tick = () => {
         raf.current = null;
+        // Measure from when the callback actually runs, not from the frame
+        // timestamp rAF hands over: on a busy main thread that stamp can be
+        // older than the budget, and the walk would then never advance.
+        const now = performance.now();
         if (t0 === null) t0 = now;
         const deadline = now + BUDGET_MS;
-        let info = sample(plan.startTime + frame * step);
+        let info: RenderFrame;
         let walked = 0;
-        while (frame < total && walked < maxPerTick && performance.now() < deadline) {
+        // At least one frame per tick, so the bar always moves.
+        do {
           frame += 1;
           walked += 1;
           info = sample(plan.startTime + frame * step);
-        }
+        } while (frame < total && walked < maxPerTick && performance.now() < deadline);
         const elapsed = Math.max(0.001, (performance.now() - t0) / 1000);
         const rate = frame / elapsed;
         const done = frame >= total;

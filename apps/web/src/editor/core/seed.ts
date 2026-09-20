@@ -165,11 +165,13 @@ export const COMMANDS = [
 
 /** 00:01:23.04 style timecode. */
 export function timecode(seconds: number, fps = 30): string {
-  const s = Math.max(0, seconds);
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = Math.floor(s % 60);
-  const f = Math.floor((s - Math.floor(s)) * fps);
+  // Work in whole frames so float error never drops a frame (10 + 1/30 → .01).
+  const total = Math.max(0, Math.round(seconds * fps));
+  const f = total % fps;
+  const wholeSeconds = Math.floor(total / fps);
+  const h = Math.floor(wholeSeconds / 3600);
+  const m = Math.floor((wholeSeconds % 3600) / 60);
+  const sec = wholeSeconds % 60;
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${pad(h)}:${pad(m)}:${pad(sec)}.${pad(f)}`;
 }
@@ -206,7 +208,9 @@ export function parseTimecode(input: string, fps = 30): number | null {
   if (!s) return null;
   if (/^\d+f$/i.test(s)) return Number(s.slice(0, -1)) / fps;
   const parts = s.split(":").map((p) => p.trim());
-  if (parts.some((p) => p === "" || Number.isNaN(Number(p.replace(".", ""))))) return null;
+  if (parts.length > 3) return null;
+  if (parts.some((p) => p === "" || !/^\d+(\.\d+)?$/.test(p))) return null;
+  if (parts.slice(0, -1).some((p) => p.includes("."))) return null;
   let sec = 0;
   const lastRaw = parts.pop() ?? "0";
   const [secPart, framePart] = lastRaw.split(".");

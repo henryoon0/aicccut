@@ -67,7 +67,7 @@ function ParamSlider({ clipId, effect }: { clipId: string; effect: EffectInstanc
       </div>
       <ScrubRegion>
         <Slider
-          aria-label={`${meta.label} 강도`}
+          label={`${meta.label} 강도`}
           value={value}
           min={meta.min}
           max={meta.max}

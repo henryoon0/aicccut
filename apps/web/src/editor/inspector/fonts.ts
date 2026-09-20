@@ -45,16 +45,21 @@ const SUFFIXES = [
 
 function buildCatalogue(): FontEntry[] {
   const out: FontEntry[] = [];
-  for (const base of FONTS) {
-    const cat = categoryOf(base);
-    for (const suffix of SUFFIXES) {
+  // A base family that is itself another base plus a suffix ("Geist" +
+  // "Mono" = "Geist Mono") would otherwise appear twice with the same id.
+  // Bases go in first (the empty suffix leads) so the real family wins.
+  const seen = new Set<string>();
+  for (const suffix of SUFFIXES) {
+    for (const base of FONTS) {
       const name = suffix ? `${base} ${suffix}` : base;
+      if (seen.has(name)) continue;
+      seen.add(name);
       const seed = [...name].reduce((a, c) => a + c.charCodeAt(0), 0);
       out.push({
         id: name.toLowerCase().replace(/\s+/g, "-"),
         name,
         family: base,
-        category: suffix === "Mono" ? "Mono" : cat,
+        category: suffix === "Mono" ? "Mono" : categoryOf(base),
         styles: 1 + (seed % 9),
       });
     }

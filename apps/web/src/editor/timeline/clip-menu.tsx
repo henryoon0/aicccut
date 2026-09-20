@@ -11,7 +11,7 @@ import {
   ContextMenuSeparator,
   ContextMenuShortcut,
 } from "#/components/ui/context-menu";
-import { endOf, useActions, useEditor, useEditorContext } from "#/editor/core";
+import { endOf, trackById, useActions, useEditor, useEditorContext } from "#/editor/core";
 import type { Clip } from "#/editor/core";
 import { useShortcutText } from "./keys";
 
@@ -19,10 +19,12 @@ export function ClipMenuItems({ clip }: { clip: Clip }) {
   const actions = useActions();
   const { time } = useEditorContext();
   const selection = useEditor((s) => s.selection.clipIds);
+  // A locked track refuses every edit; only "속성…" stays available.
+  const locked = useEditor((s) => trackById(s.doc, clip.trackId)?.locked ?? false);
   const key = useShortcutText();
 
   const t = time.get();
-  const inside = t > clip.start && t < endOf(clip);
+  const inside = !locked && t > clip.start && t < endOf(clip);
   // Menu actions apply to the selection when this clip is part of it.
   const targets = selection.includes(clip.id) ? selection : [clip.id];
 
@@ -46,21 +48,21 @@ export function ClipMenuItems({ clip }: { clip: Clip }) {
         <ContextMenuShortcut>{key("]")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuSeparator />
-      <ContextMenuItem onClick={() => actions.duplicateClip(clip.id)}>
+      <ContextMenuItem disabled={locked} onClick={() => actions.duplicateClip(clip.id)}>
         <HugeiconsIcon icon={Copy01Icon} size={14} strokeWidth={1.5} /> 복제
         <ContextMenuShortcut>{key("Mod+D")}</ContextMenuShortcut>
       </ContextMenuItem>
-      <ContextMenuItem onClick={() => actions.toggleClipsMuted(targets)}>
+      <ContextMenuItem disabled={locked} onClick={() => actions.toggleClipsMuted(targets)}>
         <HugeiconsIcon icon={clip.muted ? VolumeHighIcon : VolumeOffIcon} size={14} strokeWidth={1.5} />
         {clip.muted ? "음소거 해제" : "음소거"}
         <ContextMenuShortcut>{key("Shift+M")}</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuSeparator />
-      <ContextMenuItem variant="destructive" onClick={() => actions.deleteClips(targets, false)}>
+      <ContextMenuItem variant="destructive" disabled={locked} onClick={() => actions.deleteClips(targets, false)}>
         <HugeiconsIcon icon={Delete02Icon} size={14} strokeWidth={1.5} /> 삭제
         <ContextMenuShortcut>{key("Backspace")}</ContextMenuShortcut>
       </ContextMenuItem>
-      <ContextMenuItem variant="destructive" onClick={() => actions.deleteClips(targets, true)}>
+      <ContextMenuItem variant="destructive" disabled={locked} onClick={() => actions.deleteClips(targets, true)}>
         <HugeiconsIcon icon={Delete02Icon} size={14} strokeWidth={1.5} /> 리플 삭제
         <ContextMenuShortcut>{key("Shift+Backspace")}</ContextMenuShortcut>
       </ContextMenuItem>

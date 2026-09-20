@@ -45,6 +45,8 @@ function EditorSession({ store }: { store: EditorStore }) {
   useGlobalShortcuts(ctx, { onMessage: commandToast });
   useEffect(() => {
     document.title = `${name} · AiccCut`;
+    // Home keeps the plain title; without this the last project name lingers.
+    return () => { document.title = "AiccCut"; };
   }, [name]);
   return <EditorShell />;
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Moon, Plus, Search, Sun } from "lucide-react";
 import { Button } from "#/components/ui/button";
@@ -43,6 +43,14 @@ export function HomePage() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [recentId, setRecentId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  // `/?new=1` (the editor's ⌘N) lands here with the create dialog open.
+  const wantsNew = useSearch({ from: "/" }).new === 1;
+  useEffect(() => {
+    if (!wantsNew) return;
+    setSheetOpen(true);
+    // Drop the flag so a reload or the back button does not reopen the dialog.
+    window.history.replaceState(window.history.state, "", "/");
+  }, [wantsNew, navigate]);
 
   const refresh = useCallback(() => setProjects(listProjects()), []);
 

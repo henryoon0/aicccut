@@ -463,6 +463,17 @@ export function useFluidHover<T extends HTMLElement>(
       // whose primitive re-renders the list synchronously, like a "create"
       // row that becomes a real item) already landed; it is not a gap.
       if (!target.isConnected) return;
+      // A disabled row is usually `pointer-events: none`, so a click on it
+      // reaches the list instead of the row. That is not a gap either: the
+      // row is inert, and routing the click to the highlighted row would
+      // run a command the user never pointed at.
+      if (isItemDisabled) {
+        for (const element of itemsRef.current.values()) {
+          if (!isItemDisabled(element)) continue;
+          const r = element.getBoundingClientRect();
+          if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) return;
+        }
+      }
       // A control that sits between the rows (a search field at the top of
       // a menu, a footer button) keeps its own click too.
       const control = (target as Element).closest?.(

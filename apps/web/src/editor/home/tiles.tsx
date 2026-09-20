@@ -224,7 +224,8 @@ export function Tile({ project, api, highlighted }: { project: ProjectSummary; a
           ) : (
             <p className="mt-0.5 flex items-center gap-1.5 text-[12px] text-muted-foreground">
               <Tooltip content={new Date(project.updatedAt).toLocaleString("ko-KR")} side="bottom">
-                <span>{relativeTime(project.updatedAt)}</span>
+                {/* Lifted above the full-tile open button so the hover reaches it; clicking still opens. */}
+                <span className="relative z-30 cursor-pointer" onClick={() => api.open(project.id)}>{relativeTime(project.updatedAt)}</span>
               </Tooltip>
               <span aria-hidden>·</span>
               <span className="tabular-nums">클립 {project.clipCount}개</span>

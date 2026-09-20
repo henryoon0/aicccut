@@ -186,10 +186,17 @@ export function useAutosave(store: EditorStore, delayMs = 800): void {
   }, [store, delayMs]);
 }
 
-/** Write the 6 seed projects when the project list is empty. The first gets the full timeline, the rest assets only. */
+/** Set once the sample projects have been written, so deleting them all sticks. */
+export const SEEDED_KEY = "aicccut.seeded";
+
+/** Write the 6 seed projects on first run. The first gets the full timeline, the rest assets only. */
 export function seedIfEmpty(storage = defaultStorage()): void {
   if (!storage) return;
-  if ((readJson<Project[]>(storage, PROJECTS_KEY) ?? []).length) return;
+  if (storage.getItem(SEEDED_KEY)) return;
+  if ((readJson<Project[]>(storage, PROJECTS_KEY) ?? []).length) {
+    storage.setItem(SEEDED_KEY, "1");
+    return;
+  }
   for (const [i, project] of PROJECTS.entries()) {
     const doc: Document = {
       project, assets: structuredClone(ASSETS), tracks: structuredClone(TRACKS),
@@ -198,6 +205,7 @@ export function seedIfEmpty(storage = defaultStorage()): void {
     writeJson(storage, docKey(project.id), doc);
   }
   writeProjects(storage, PROJECTS);
+  storage.setItem(SEEDED_KEY, "1");
 }
 
 /** In-memory StorageLike for tests and SSR fallbacks. */

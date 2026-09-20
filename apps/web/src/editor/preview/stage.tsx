@@ -74,7 +74,9 @@ export function Preview() {
             {safeAreas && <SafeAreas project={project} />}
             {active.length === 0 && (
               <div data-stage-bg className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <span className="text-muted-foreground" style={{ fontSize: Math.round(project.width * 0.016) }}>
+                {/* The stage is CSS-scaled, so undo that scale here: the note
+                    reads at ~13px on screen for any project size or ratio. */}
+                <span className="text-muted-foreground" style={{ fontSize: 13 / scale, whiteSpace: "nowrap" }}>
                   재생 헤드 위치에 클립이 없습니다
                 </span>
               </div>
@@ -96,17 +98,41 @@ interface StackInput {
 }
 
 /**
- * Layers bottom-to-top in track order. An effect track wraps everything under
- * it in a filtered box; the wrapper is emitted whether or not it filters, so
- * the tree shape never changes and `<video>` elements survive playback.
+ * Layers bottom-to-top in track order, as one flat list keyed by clip id so
+ * `<video>` elements survive effect clips starting and ending mid-playback.
+ * An effect track applies to everything under it: its filter is handed to
+ * each of those layers, which fold it into their content box. That keeps the
+ * selection chrome (drawn outside the content box) crisp under a blur.
  */
 function buildLayers({ doc, active, time, playing, selected, scale }: StackInput): ReactNode[] {
   const bottomUp = [...doc.tracks].reverse();
   const placed = new Set<string>();
-  let stack: ReactNode[] = [];
+  const entries: { clip: Clip; track?: Track; filters: string[] }[] = [];
 
-  const layerFor = (clip: Clip, track?: Track) => {
-    placed.add(clip.id);
+  for (const track of bottomUp) {
+    const clips = active.filter((c) => c.trackId === track.id);
+    // Every clip on a real track is accounted for here, drawn or not, so the
+    // orphan pass below never resurrects a hidden or audio clip.
+    clips.forEach((c) => placed.add(c.id));
+    if (track.kind === "audio") continue;
+    if (track.kind === "effect") {
+      const filter = track.hidden ? "" : stackFilter(clips, time);
+      if (filter) for (const e of entries) e.filters.push(filter);
+      continue;
+    }
+    if (track.hidden) continue;
+    for (const clip of clips) entries.push({ clip, track, filters: [] });
+  }
+
+  // Clips on a track the document no longer has still deserve a picture.
+  for (const clip of active) {
+    if (placed.has(clip.id)) continue;
+    const asset = clip.assetId ? assetById(doc, clip.assetId) : undefined;
+    if (asset?.kind === "audio") continue;
+    entries.push({ clip, track: trackById(doc, clip.trackId), filters: [] });
+  }
+
+  return entries.map(({ clip, track, filters }) => {
     const asset = clip.assetId ? assetById(doc, clip.assetId) : undefined;
     return (
       <ClipLayer
@@ -120,33 +146,8 @@ function buildLayers({ doc, active, time, playing, selected, scale }: StackInput
         selected={selected.includes(clip.id)}
         stageScale={scale}
         interactive={track?.locked !== true}
+        stackFilter={filters.join(" ")}
       />
     );
-  };
-
-  for (const track of bottomUp) {
-    if (track.kind === "audio") continue;
-    const clips = active.filter((c) => c.trackId === track.id);
-    if (track.kind === "effect") {
-      clips.forEach((c) => placed.add(c.id));
-      const filter = track.hidden ? "" : stackFilter(clips, time);
-      stack = [
-        <div key={`fx-${track.id}`} className="absolute inset-0" style={filter ? { filter } : undefined}>
-          {stack}
-        </div>,
-      ];
-      continue;
-    }
-    if (track.hidden) continue;
-    for (const clip of clips) stack.push(layerFor(clip, track));
-  }
-
-  // Clips on a track the document no longer has still deserve a picture.
-  for (const clip of active) {
-    if (placed.has(clip.id)) continue;
-    const asset = clip.assetId ? assetById(doc, clip.assetId) : undefined;
-    if (asset?.kind === "audio") continue;
-    stack.push(layerFor(clip, trackById(doc, clip.trackId)));
-  }
-  return stack;
+  });
 }
