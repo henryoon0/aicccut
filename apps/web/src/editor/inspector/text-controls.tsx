@@ -11,6 +11,7 @@ import { TabItem, Tabs, TabsList } from "#/components/ui/tabs";
 import { DEFAULT_TEXT_STYLE, TEXT_SWATCHES, WEIGHT_LABEL, type ClipText, type TextAlign } from "#/editor/core";
 import { cn } from "#/lib/utils";
 import { FontPickerDialog } from "./font-browser";
+import { ensureFontLoaded } from "#/editor/core";
 import { fontFamilyFor } from "./fonts";
 import { NumberField } from "./number-field";
 import { Field } from "./shared";
@@ -35,7 +36,7 @@ export function FontField({ api }: { api: TextApi }) {
           "transition-colors duration-80 hover:bg-surface-4 focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
         )}
       >
-        <span className="min-w-0 flex-1 truncate text-[13px]" style={{ fontFamily: fontFamilyFor(api.text.font) }}>
+        <span className="min-w-0 flex-1 truncate text-[13px]" style={{ fontFamily: (ensureFontLoaded(api.text.font), fontFamilyFor(api.text.font)) }}>
           {api.text.font}
         </span>
         <span className="shrink-0 text-[11px] text-muted-foreground">찾아보기</span>

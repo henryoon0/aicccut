@@ -117,7 +117,7 @@ export const FONTS = [
   "Inter", "Pretendard", "Noto Sans KR", "Playfair Display", "Space Grotesk", "IBM Plex Sans", "IBM Plex Mono",
   "Gothic A1", "Nanum Myeongjo", "DM Sans", "Fraunces", "JetBrains Mono", "Manrope", "Lora", "Sora", "Outfit",
   "Bricolage Grotesque", "Instrument Serif", "Geist", "Geist Mono", "Nanum Gothic", "Black Han Sans", "Do Hyeon",
-  "Jua", "Gowun Dodum", "Gowun Batang", "Hahmlet", "Song Myung", "Sunflower", "Poor Story",
+  "Jua", "Gowun Dodum", "Gowun Batang", "Hahmlet", "Song Myung", "Poor Story",
 ];
 
 export const FONT_WEIGHTS = [100, 200, 300, 400, 500, 600, 700, 800, 900];

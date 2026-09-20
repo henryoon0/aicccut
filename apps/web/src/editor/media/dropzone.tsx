@@ -11,6 +11,7 @@ import { cn } from "#/lib/utils";
 import { fileSize } from "#/editor/core";
 import type { PendingImport } from "./import";
 import { KIND_LABEL } from "./helpers";
+import { useDocumentHidden } from "./files";
 
 const FORMATS = "지원 형식: MP4, MOV, WAV, MP3, PNG, JPG · 최대 4K";
 
@@ -96,6 +97,9 @@ export function WindowDropOverlay({ show }: { show: boolean }) {
 /** A file mid-import: the card it will become, filling up. */
 export function PendingTile({ item }: { item: PendingImport }) {
   const pct = Math.round(item.progress * 100);
+  // Chrome parks video/audio loading while the tab is hidden; say so instead
+  // of leaving the bar frozen at 90%.
+  const parked = useDocumentHidden() && item.kind !== "image" && item.progress < 1;
   return (
     <motion.div
       layout
@@ -128,7 +132,7 @@ export function PendingTile({ item }: { item: PendingImport }) {
       <div className="bg-surface-3 px-2 py-1.5">
         <div className="truncate text-[11px]">{item.name}</div>
         <div className="text-[10px] text-muted-foreground">
-          {KIND_LABEL[item.kind]} · {fileSize(item.size)}
+          {parked ? "탭으로 돌아오면 계속" : `${KIND_LABEL[item.kind]} · ${fileSize(item.size)}`}
         </div>
       </div>
     </motion.div>

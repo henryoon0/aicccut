@@ -5,7 +5,7 @@
  * crisp through a blur, whether it comes from the clip or an effect track.
  */
 import { useEffect, useRef, type CSSProperties } from "react";
-import { evaluateClip, useActions, type AssetKind, type Clip, type Project } from "#/editor/core";
+import { ensureFontLoaded, evaluateClip, useActions, type AssetKind, type Clip, type Project } from "#/editor/core";
 import { useAssetUrl } from "#/editor/media/files";
 import { cn } from "#/lib/utils";
 import { blendMode, clamp, clipFilter, layerTransform, textStyle, tintBackground, vignetteAmount } from "./helpers";
@@ -31,6 +31,12 @@ export interface ClipLayerProps {
 export function ClipLayer({ clip, time, project, kind, playing, muted, selected, stageScale, interactive, stackFilter }: ClipLayerProps) {
   const actions = useActions();
   const url = useAssetUrl(clip.assetId);
+  // A text clip's family is fetched on demand, so reloads and imported
+  // projects render in the right face without the font browser opening.
+  const font = clip.props.text?.font;
+  useEffect(() => {
+    if (font) ensureFontLoaded(font);
+  }, [font]);
   const elRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ mode: "move" | "scale"; px: number; py: number; x: number; y: number; scale: number; dist: number } | null>(null);
 

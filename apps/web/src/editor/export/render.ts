@@ -121,10 +121,13 @@ export function createFrameSampler(doc: Document): (t: number) => RenderFrame {
 export function useDocumentRender() {
   const [state, setState] = useState<RenderState>(IDLE);
   const raf = useRef<number | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stop = useCallback(() => {
     if (raf.current !== null) cancelAnimationFrame(raf.current);
+    if (timer.current !== null) clearTimeout(timer.current);
     raf.current = null;
+    timer.current = null;
   }, []);
 
   useEffect(() => stop, [stop]);
@@ -141,8 +144,21 @@ export function useDocumentRender() {
 
       setState({ ...IDLE, status: "rendering", totalFrames: total, frameInfo: sample(plan.startTime) });
 
+      // rAF stops in a background tab, and people do switch away while an
+      // export runs. Hidden, the walk continues on a timer with a bigger
+      // batch (nobody is watching the bar); visible, it paces on rAF.
+      const schedule = () => {
+        if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+          timer.current = setTimeout(tick, 0);
+        } else {
+          raf.current = requestAnimationFrame(tick);
+        }
+      };
+
       const tick = () => {
         raf.current = null;
+        timer.current = null;
+        const hidden = typeof document !== "undefined" && document.visibilityState === "hidden";
         // Measure from when the callback actually runs, not from the frame
         // timestamp rAF hands over: on a busy main thread that stamp can be
         // older than the budget, and the walk would then never advance.
@@ -156,7 +172,7 @@ export function useDocumentRender() {
           frame += 1;
           walked += 1;
           info = sample(plan.startTime + frame * step);
-        } while (frame < total && walked < maxPerTick && performance.now() < deadline);
+        } while (frame < total && walked < (hidden ? maxPerTick * 10 : maxPerTick) && performance.now() < deadline);
         const elapsed = Math.max(0.001, (performance.now() - t0) / 1000);
         const rate = frame / elapsed;
         const done = frame >= total;
@@ -169,10 +185,10 @@ export function useDocumentRender() {
           totalFrames: total,
           frameInfo: info,
         });
-        if (!done) raf.current = requestAnimationFrame(tick);
+        if (!done) schedule();
       };
 
-      raf.current = requestAnimationFrame(tick);
+      schedule();
     },
     [stop],
   );

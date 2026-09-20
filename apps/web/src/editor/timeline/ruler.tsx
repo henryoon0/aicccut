@@ -2,6 +2,8 @@
  * Time ruler: ticks, click / drag scrubbing and the document's bookmarks as
  * small flags (click seeks, right-click removes).
  */
+import { useRef } from "react";
+import { markPointed } from "./pointed";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { Tooltip } from "#/components/ui/tooltip";
 import { timecode, useActions, useEditor, useEditorContext } from "#/editor/core";
@@ -10,16 +12,26 @@ import type { Viewport } from "./engine";
 import { RULER_H, range, shortTime, tickSpec } from "./geometry";
 
 export function Ruler({ view, onScrub }: { view: Viewport; onScrub: (e: ReactPointerEvent) => void }) {
-  const { pps, contentW, duration } = view;
+  const { pps, contentW, duration, xToTime } = view;
   const { major, minor } = tickSpec(pps);
   const bookmarks = useEditor((s) => s.doc.bookmarks);
+  const { time } = useEditorContext();
+  // Assistive tech and some automation send a bare `click` with no pointer
+  // events; a real press sets this flag first so it is not seeked twice.
+  const pointed = useRef(false);
 
   return (
     <div
       data-testid="ruler"
       className="relative shrink-0 cursor-ew-resize select-none border-b border-border bg-surface-3"
       style={{ width: contentW, height: RULER_H }}
-      onPointerDown={onScrub}
+      onPointerDown={(e) => {
+        markPointed(pointed);
+        onScrub(e);
+      }}
+      onClick={(e) => {
+        if (!pointed.current) time.set(xToTime(e.clientX));
+      }}
     >
       {range(minor, duration).map((t) => (
         <div key={`m${t}`} className="absolute bottom-0 h-[5px] w-px bg-border" style={{ left: t * pps }} />

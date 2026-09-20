@@ -4,7 +4,7 @@
  * `scale()` on top, so nothing below has to know about zoom.
  */
 import { useEffect, useLayoutEffect, type CSSProperties } from "react";
-import { evaluateClip, type ChannelValues, type Clip, type Project, type TextStyle } from "#/editor/core";
+import { evaluateClip, fontStackFor, type ChannelValues, type Clip, type Project, type TextStyle } from "#/editor/core";
 
 /** Text sizes are authored against a 1920-wide frame and scale with the project. */
 export const REFERENCE_WIDTH = 1920;
@@ -93,7 +93,7 @@ export function tintBackground(clip: Clip, t: number): string {
 /** Typographic CSS for a text clip, in canvas pixels. */
 export function textStyle(style: TextStyle, project: Project): CSSProperties {
   return {
-    fontFamily: `"${style.font}", "Pretendard", "Inter Variable", sans-serif`,
+    fontFamily: fontStackFor(style.font),
     fontSize: style.size * (project.width / REFERENCE_WIDTH),
     fontWeight: style.weight,
     fontStyle: style.italic ? "italic" : "normal",

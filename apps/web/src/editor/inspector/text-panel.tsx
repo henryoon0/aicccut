@@ -6,6 +6,7 @@
 import { Textarea } from "#/components/ui/textarea";
 import { DEFAULT_TEXT_STYLE, useActions, usePlayhead, type ClipText, type TextStyle } from "#/editor/core";
 import { cn } from "#/lib/utils";
+import { ensureFontLoaded } from "#/editor/core";
 import { fontFamilyFor } from "./fonts";
 import { AlignRow, ColorRow, FontField, TextMetrics, isDefaultTextStyle, weightLabel, type TextApi } from "./text-controls";
 import { Card, Field, useSelectedClip } from "./shared";
@@ -53,6 +54,7 @@ const TYPE_SCALE = (THUMB_W / 1920) * 2.4;
 
 /** Inline CSS for a preset on its thumbnail: real family, weight and colour. */
 function thumbCss(style: TextStyle) {
+  ensureFontLoaded(style.font);
   return {
     fontFamily: fontFamilyFor(style.font),
     fontSize: Math.max(9, Math.round(style.size * TYPE_SCALE)),

@@ -12,3 +12,4 @@ export * from "./actions";
 export * from "./persistence";
 export * from "./shortcuts";
 export * from "./commands";
+export * from "./fonts";

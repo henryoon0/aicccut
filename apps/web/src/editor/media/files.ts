@@ -55,29 +55,75 @@ export function useAssetUrl(assetId: string | undefined): string | undefined {
   return assetId ? getAssetUrl(assetId) : undefined;
 }
 
+/** Resolves once the document is visible (immediately when it already is). */
+function whenVisible(): Promise<void> {
+  if (typeof document === "undefined" || document.visibilityState !== "hidden") return Promise.resolve();
+  return new Promise((resolve) => {
+    const on = () => {
+      if (document.visibilityState === "hidden") return;
+      document.removeEventListener("visibilitychange", on);
+      resolve();
+    };
+    document.addEventListener("visibilitychange", on);
+  });
+}
+
+/** How long a visible tab may keep a media element loading before we give up on its metadata. */
+const PROBE_TIMEOUT_MS = 15_000;
+
 /**
  * Read duration / dimensions from a media file via a detached element.
- * Resolves with zeros when the browser cannot decode it.
+ *
+ * Chrome defers loading media in a background tab until it becomes visible
+ * again, so video/audio probing waits for visibility first (images decode
+ * either way). Resolves with zeros when the browser cannot decode the file
+ * or when a visible tab still has no metadata after PROBE_TIMEOUT_MS.
  */
 export function probeMediaFile(file: File): Promise<{ duration: number; width?: number; height?: number }> {
-  return new Promise((resolve) => {
-    const url = URL.createObjectURL(file);
-    const done = (r: { duration: number; width?: number; height?: number }) => {
-      URL.revokeObjectURL(url);
-      resolve(r);
-    };
-    if (file.type.startsWith("image/")) {
+  if (file.type.startsWith("image/")) {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const done = (r: { duration: number; width?: number; height?: number }) => {
+        URL.revokeObjectURL(url);
+        resolve(r);
+      };
       const img = new Image();
       img.onload = () => done({ duration: 0, width: img.naturalWidth, height: img.naturalHeight });
       img.onerror = () => done({ duration: 0 });
       img.src = url;
-      return;
-    }
-    const el = document.createElement(file.type.startsWith("audio/") ? "audio" : "video") as HTMLVideoElement;
-    el.preload = "metadata";
-    el.onloadedmetadata = () =>
-      done({ duration: el.duration || 0, width: el.videoWidth || undefined, height: el.videoHeight || undefined });
-    el.onerror = () => done({ duration: 0 });
-    el.src = url;
-  });
+    });
+  }
+  return whenVisible().then(
+    () =>
+      new Promise((resolve) => {
+        const url = URL.createObjectURL(file);
+        let settled = false;
+        const done = (r: { duration: number; width?: number; height?: number }) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          URL.revokeObjectURL(url);
+          resolve(r);
+        };
+        const el = document.createElement(file.type.startsWith("audio/") ? "audio" : "video") as HTMLVideoElement;
+        el.preload = "metadata";
+        el.onloadedmetadata = () =>
+          done({ duration: Number.isFinite(el.duration) ? el.duration : 0, width: el.videoWidth || undefined, height: el.videoHeight || undefined });
+        el.onerror = () => done({ duration: 0 });
+        const timer = setTimeout(() => done({ duration: 0 }), PROBE_TIMEOUT_MS);
+        el.src = url;
+      }),
+  );
+}
+
+/** True while the tab is hidden and media probes are therefore parked. */
+export function useDocumentHidden(): boolean {
+  return useSyncExternalStore(
+    (l) => {
+      document.addEventListener("visibilitychange", l);
+      return () => document.removeEventListener("visibilitychange", l);
+    },
+    () => document.visibilityState === "hidden",
+    () => false,
+  );
 }

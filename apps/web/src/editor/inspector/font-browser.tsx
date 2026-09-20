@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "#/components/ui/input";
 import { TabItem, Tabs, TabsList } from "#/components/ui/tabs";
 import { cn } from "#/lib/utils";
+import { ensureFontLoaded } from "#/editor/core";
 import { CATEGORY_TINT, FONT_BY_NAME, FONT_CATALOGUE, fontFamilyFor, type FontCategory, type FontEntry } from "./fonts";
 
 const ROW = 52;
@@ -230,6 +231,8 @@ interface FontRowProps {
 }
 
 function FontRow({ font, preview, current, fav, onPick, onFav, style }: FontRowProps) {
+  // Rows are virtualised, so only the ones on screen fetch their family.
+  useEffect(() => ensureFontLoaded(font.name), [font.name]);
   return (
     <div
       role="option"
@@ -256,9 +259,7 @@ function FontRow({ font, preview, current, fav, onPick, onFav, style }: FontRowP
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
           <span className="truncate">{font.name}</span>
           <span>·</span>
-          <span className="shrink-0">
-            스타일 {font.styles}개
-          </span>
+          <span className="shrink-0">{CATEGORY_LABEL[font.category]}</span>
         </div>
       </div>
       <button

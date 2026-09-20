@@ -3,8 +3,9 @@
  * tinted block for text and effects. Edges are trim handles; right-click
  * opens the action menu.
  */
-import { useMemo } from "react";
-import type { CSSProperties, HTMLAttributes, PointerEvent as ReactPointerEvent, ReactNode } from "react";
+import { useMemo, useRef } from "react";
+import { markPointed } from "./pointed";
+import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent, ReactNode } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { VolumeOffIcon } from "@hugeicons/core-free-icons";
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from "#/components/ui/context-menu";
@@ -40,6 +41,7 @@ export function ClipView({
   const isVideo = track.kind === "video";
   const isAudio = track.kind === "audio";
   const keyframes = useMemo(() => allKeyframes(clip.props.keyframes), [clip.props.keyframes]);
+  const pointed = useRef(false);
 
   return (
     <ContextMenu
@@ -51,8 +53,25 @@ export function ClipView({
         render={
           <ClipBox
             data-clip={clip.id}
+            role="button"
+            tabIndex={0}
             aria-label={clip.label}
-            onPointerDown={(e: ReactPointerEvent) => drags.onClipPointerDown(e, clip)}
+            aria-pressed={selected}
+            onPointerDown={(e: ReactPointerEvent) => {
+              markPointed(pointed);
+              drags.onClipPointerDown(e, clip);
+            }}
+            // Keyboard activation and click-only automation never send pointer
+            // events; select here unless a real press already handled it.
+            onClick={(e: ReactMouseEvent) => {
+              if (!pointed.current) actions.select(clip.id, e.shiftKey);
+            }}
+            onKeyDown={(e: ReactKeyboardEvent) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                actions.select(clip.id, e.shiftKey);
+              }
+            }}
             className={cn(
               "group",
               track.locked ? "cursor-not-allowed" : "cursor-grab",

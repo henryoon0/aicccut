@@ -57,8 +57,11 @@ function Lane({
       >
         <span className="size-1.5 shrink-0 rounded-full" style={{ background: meta.color, opacity: keyframes.length ? 1 : 0.35 }} />
         <span className={cn("truncate", keyframes.length ? "text-foreground" : "text-muted-foreground")}>{meta.label}</span>
-        <span className="ml-auto tabular-nums text-muted-foreground">
-          {keyframes.length ? keyframes.length : formatChannelValue(channel, evaluateClip(clip, clip.start)[channel])}
+        <span
+          className="ml-auto tabular-nums text-muted-foreground"
+          title={keyframes.length ? `키프레임 ${keyframes.length}개` : undefined}
+        >
+          {keyframes.length ? `${keyframes.length}개` : formatChannelValue(channel, evaluateClip(clip, clip.start)[channel])}
         </span>
       </div>
       <div
