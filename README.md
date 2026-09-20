@@ -3,9 +3,6 @@
 브라우저에서 돌아가는 영상 편집기입니다. 설치 없이 폴더를 받아 실행하면 바로 편집 화면이 열립니다.
 화면 문구는 전부 한국어이고, 글꼴은 Pretendard를 씁니다.
 
-[OpenCut](https://github.com/opencut-app/opencut)의 리라이트 코드를 바탕으로 편집기 UI를 새로 만들었습니다.
-UI 부품은 [fluid](https://www.fluidfunctionalism.com) 디자인 시스템을 씁니다. 둘 다 MIT 라이선스입니다.
-
 ![편집기](docs/screens/03-editor.png)
 
 ## 실행하기
